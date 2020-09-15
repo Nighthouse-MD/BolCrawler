@@ -9,8 +9,10 @@ PRODUCT_ID = '9200000055242553'
 
 SLEEP_INVERVAL = 3
 
+RESULTS_FOLDER = 'C:\\boltracker results\\'
 
-def getStockAmountWith999Trick(lastOption):
+
+def getStockAmountWith999Trick(driver, lastOption):
     lastOption.click()
     amountInput = driver.find_element_by_class_name(
         'js_quantity_overlay_input')
@@ -35,70 +37,73 @@ def getProfile():
     return profile
 
 
-driver = webdriver.Firefox(firefox_profile=getProfile(),
-                           executable_path=r'geckodriver.exe')
-driver.get('https://www.bol.com/nl/p/productName/' + PRODUCT_ID)
+def handlerCrawlForOneProductId(productId):  
+    driver = webdriver.Firefox(firefox_profile=getProfile(),
+                            executable_path=r'geckodriver.exe')
+    driver.get('https://www.bol.com/nl/p/productName/' + productId)
 
-time.sleep(SLEEP_INVERVAL)
+    time.sleep(SLEEP_INVERVAL)
 
-# handle modals
-firstModelAcceptButton = driver.find_element_by_xpath(
-    '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
-firstModelAcceptButton.click()
+    # handle modals
+    firstModelAcceptButton = driver.find_element_by_xpath(
+        '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
+    firstModelAcceptButton.click()
 
-time.sleep(SLEEP_INVERVAL)
+    time.sleep(SLEEP_INVERVAL)
 
-secondModalCloseButton = driver.find_element_by_xpath(
-    '//*[@id="modalWindow"]/div[2]/button')
-secondModalCloseButton.click()
+    secondModalCloseButton = driver.find_element_by_xpath(
+        '//*[@id="modalWindow"]/div[2]/button')
+    secondModalCloseButton.click()
 
-time.sleep(SLEEP_INVERVAL)
+    time.sleep(SLEEP_INVERVAL)
 
-# get price and sellerId
-priceOfOne = driver.find_element_by_class_name(
-    'promo-price').text.replace('\n', '.')
+    # get price and sellerId
+    priceOfOne = driver.find_element_by_class_name(
+        'promo-price').text.replace('\n', '.')
 
-sellerLink = driver.find_element_by_xpath(
-    '/html/body/div[1]/main/div/div[1]/div[2]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
-sellerPath = sellerLink.get_attribute('href')
-sellerId = sellerPath.split("/")[-2]
+    sellerLink = driver.find_element_by_xpath(
+        '/html/body/div[1]/main/div/div[1]/div[2]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
+    sellerPath = sellerLink.get_attribute('href')
+    sellerId = sellerPath.split("/")[-2]
 
-# add product to cart
-addToCartButton = driver.find_element_by_xpath('//*[@id="' + PRODUCT_ID + '"]')
-addToCartButton.click()
+    # add product to cart
+    addToCartButton = driver.find_element_by_xpath('//*[@id="' + productId + '"]')
+    addToCartButton.click()
 
-time.sleep(SLEEP_INVERVAL)
+    time.sleep(SLEEP_INVERVAL)
 
-# go to cart
-driver.get('https://www.bol.com/nl/order/basket.html')
+    # go to cart
+    driver.get('https://www.bol.com/nl/order/basket.html')
 
-time.sleep(SLEEP_INVERVAL)
+    time.sleep(SLEEP_INVERVAL)
 
-# check if there is a 'meer' option
-hasMoreThanTenOptions = False
-stockAmount = -1
+    # check if there is a 'meer' option
+    hasMoreThanTenOptions = False
+    stockAmount = -1
 
-quantityDropDown = driver.find_element_by_id('tst_quantity_dropdown')
-options = quantityDropDown.find_elements_by_tag_name('option')
+    quantityDropDown = driver.find_element_by_id('tst_quantity_dropdown')
+    options = quantityDropDown.find_elements_by_tag_name('option')
 
-if any(option.get_attribute('value') == 'meer' for option in options):
-    stockAmount = getStockAmountWith999Trick(options[-1])
-else:
-    stockAmount = options[-1].get_attribute('value')
+    if any(option.get_attribute('value') == 'meer' for option in options):
+        stockAmount = getStockAmountWith999Trick(driver, options[-1])
+    else:
+        stockAmount = options[-1].get_attribute('value')
 
-driver.close()
+    driver.close()
 
-# add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
+    # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
 
-fileName = PRODUCT_ID + '_result.csv'
+    fileName = RESULTS_FOLDER + productId + '_result.csv'
 
-if(not path.exists(fileName)):
-    with open(fileName, 'w') as f:
-        f.write('Date, Time, Seller Id, Price, Stock Amount \n')
+    if(not path.exists(fileName)):
+        with open(fileName, 'w') as f:
+            f.write('Date, Time, Seller Id, Price, Stock Amount \n')
 
-with open(fileName, 'a') as f:
-    f.write(datetime.now().strftime("%d/%m/%Y, %H:%M:%S") +
-            ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
+    with open(fileName, 'a') as f:
+        f.write(datetime.now().strftime("%d/%m/%Y, %H:%M:%S") +
+                ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
+
+handlerCrawlForOneProductId(PRODUCT_ID)
 
 
 # all offers of a seller page https://www.bol.com/nl/c/{anything}/{SELLER_ID}/
