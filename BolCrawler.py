@@ -36,7 +36,7 @@ def getProfile():
 
 
 driver = webdriver.Firefox(firefox_profile=getProfile(),
-                           executable_path=r'C:\Users\eclipse\AppData\Local\GeckoDriver\geckodriver.exe')
+                           executable_path=r'geckodriver.exe')
 driver.get('https://www.bol.com/nl/p/productName/' + PRODUCT_ID)
 
 time.sleep(SLEEP_INVERVAL)
