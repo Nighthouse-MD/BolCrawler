@@ -46,7 +46,7 @@ def handlerCrawlForOneProduct(product):
                                    executable_path=GECKODRIVER_PATH)
         driver.get('https://www.bol.com/nl/p/productName/' + product[1])
 
-        time.sleep(SLEEP_INVERVAL)
+        time.sleep(1)
 
         # handle modals
         firstModelAcceptButton = driver.find_element_by_xpath(
@@ -94,7 +94,7 @@ def handlerCrawlForOneProduct(product):
         # go to cart
         driver.get('https://www.bol.com/nl/order/basket.html')
 
-        time.sleep(SLEEP_INVERVAL)
+        time.sleep(1)
 
         # check if there is a 'meer' option
         hasMoreThanTenOptions = False
