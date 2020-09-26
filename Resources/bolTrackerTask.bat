@@ -1,1 +1,1 @@
-"C:\Users\bolderadmin\AppData\Local\Programs\Python\Python38\python.exe" "C:\code\bolcrawler\bolcrawler\BolCrawler.py"
+"C:\Users\bolderadmin\AppData\Local\Programs\Python\Python38\python.exe" "C:\code\bolcrawler\bolcrawler\__main__.py"
