@@ -36,6 +36,39 @@ def getProfile():
     return profile
 
 
+def handlerCrawlForOneProductAllSellers(product):
+    SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
+    RESULTS_FOLDER = Constants.RESULTS_FOLDER
+    GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+
+    driver = webdriver.Firefox(firefox_profile=getProfile(),
+                               executable_path=GECKODRIVER_PATH)
+
+    productSellersOverviewUrl = 'https://www.bol.com/nl/prijsoverzicht/productname/' + \
+        product[1]
+
+    driver.get(productSellersOverviewUrl)
+
+    time.sleep(1)
+
+    # handle modals
+    firstModelAcceptButton = driver.find_element_by_xpath(
+        '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
+    firstModelAcceptButton.click()
+
+    time.sleep(SLEEP_INVERVAL)
+
+    inWinkelwagenLinks = driver.find_element_by_link_text('In winkelwagen')
+
+    # foreach element in winkelwagen links
+    # click it, and go to basket
+    # get price, sellerId
+    # do the track magic
+    # save it
+    # click verwijder in basket
+    # go back to prijsoverzicht page and click the next item in this list
+
+
 def handlerCrawlForOneProduct(product):
     try:
         SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
