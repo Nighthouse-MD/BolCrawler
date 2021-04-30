@@ -37,28 +37,127 @@ def getProfile():
 
 
 def handlerCrawlForOneProductAllSellers(product):
-    SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
-    RESULTS_FOLDER = Constants.RESULTS_FOLDER
-    GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+    try:
+        SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
+        RESULTS_FOLDER = Constants.RESULTS_FOLDER
+        GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
 
-    driver = webdriver.Firefox(firefox_profile=getProfile(),
-                               executable_path=GECKODRIVER_PATH)
+        driver = webdriver.Firefox(firefox_profile=getProfile(),
+                                   executable_path=GECKODRIVER_PATH)
 
-    productSellersOverviewUrl = 'https://www.bol.com/nl/prijsoverzicht/productname/' + \
-        product[1]
+        productSellersOverviewUrl = 'https://www.bol.com/nl/prijsoverzicht/productname/' + \
+            product[1] + '/?filter=new&sortOrder=asc&sort=price'
 
-    driver.get(productSellersOverviewUrl)
+        driver.get(productSellersOverviewUrl)
 
-    time.sleep(1)
+        time.sleep(1)
 
-    # handle modals
-    firstModelAcceptButton = driver.find_element_by_xpath(
-        '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
-    firstModelAcceptButton.click()
+        # handle modals
+        firstModelAcceptButton = driver.find_element_by_xpath(
+            '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
+        firstModelAcceptButton.click()
 
-    time.sleep(SLEEP_INVERVAL)
+        time.sleep(SLEEP_INVERVAL)
 
-    inWinkelwagenLinks = driver.find_element_by_link_text('In winkelwagen')
+        secondModalCloseButton = driver.find_element_by_xpath(
+            '//*[@id="modalWindow"]/div[2]/button')
+        secondModalCloseButton.click()
+
+        time.sleep(SLEEP_INVERVAL)
+
+        amountOfInWinkelwagenLinks = len(driver.find_elements_by_link_text(
+            'In winkelwagen'))
+
+        for i in range(amountOfInWinkelwagenLinks):
+            inWinkelwagenLinks = driver.find_elements_by_link_text(
+                'In winkelwagen')
+
+            # add to cart
+            inWinkelwagenLinks[i].click()
+
+            time.sleep(SLEEP_INVERVAL)
+
+            # go to cart
+            driver.get('https://www.bol.com/nl/order/basket.html')
+
+            time.sleep(1)
+
+            # get price and sellerId
+            try:
+                priceOfOne = driver.find_element_by_id(
+                    'tst_product_price').text.replace(',', '.').strip('€ ')
+            except:
+                print(sys.exc_info()[0])
+                priceOfOne = -1
+                conn = create_connection(Constants.DB_PATH)
+                create_productSnapshot(
+                    conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
+                driver.close()
+                return
+
+            # check for non bol seller element location
+            sellerElements = driver.find_elements_by_xpath(
+                '/html/body/div/main/div[3]/div/div/div[2]/div/div[2]/div')
+
+            sellerIsBol = False
+
+            if(sellerElements == None or len(sellerElements) == 0):
+                sellerIsBol = True
+
+            sellerId = 'BOL'
+
+            if(not sellerIsBol):
+                sellerLink = driver.find_element_by_xpath(
+                    '/html/body/div/main/div[3]/div/div/div[2]/div/div[2]/div/wsp-popup-fragment/a')
+                sellerPath = sellerLink.get_attribute('href')
+                sellerId = sellerPath.split("/")[-2]
+
+            # check if there is a 'meer' option
+            hasMoreThanTenOptions = False
+            stockAmount = -1
+
+            quantityDropDown = driver.find_element_by_id(
+                'tst_quantity_dropdown')
+            options = quantityDropDown.find_elements_by_tag_name('option')
+
+            if any(option.get_attribute('value') == 'meer' for option in options):
+                stockAmount = getStockAmountWith999Trick(driver, options[-1])
+            else:
+                stockAmount = options[-1].get_attribute('value')
+
+            # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
+            fileName = RESULTS_FOLDER + product[1] + '_result.csv'
+            trackedOn = datetime.now()
+
+            if(not path.exists(fileName)):
+                with open(fileName, 'w') as f:
+                    f.write('Date, Time, Seller Id, Price, Stock Amount \n')
+
+            with open(fileName, 'a') as f:
+                f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
+                        ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
+
+            # add the row to the db
+            conn = create_connection(Constants.DB_PATH)
+            create_productSnapshot(
+                conn, (product[0], trackedOn, sellerId, priceOfOne, stockAmount))
+
+            verwijderButton = driver.find_element_by_link_text(
+                'Verwijder').click()
+
+            productSellersOverviewUrl = 'https://www.bol.com/nl/prijsoverzicht/productname/' + \
+                product[1] + '/?filter=new&sortOrder=asc&sort=price'
+
+            driver.get(productSellersOverviewUrl)
+        driver.close()
+    except:
+        print(sys.exc_info()[0])
+        priceOfOne = -1
+        conn = create_connection(Constants.DB_PATH)
+        create_productSnapshot(
+            conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
+        driver.close()
+        return
 
     # foreach element in winkelwagen links
     # click it, and go to basket
@@ -107,13 +206,20 @@ def handlerCrawlForOneProduct(product):
             driver.close()
             return
 
-        sellerIsBol = driver.find_element_by_xpath(
-            '/html/body/div[1]/main/div/div[1]/div[2]/div[2]/div[1]/div/wsp-visibility-switch/div[3]').text == 'Verkoop door bol.com'
+        # check for non bol seller element location
+        sellerElement = driver.find_element_by_xpath(
+            '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]')
+
+        if(sellerElement == None):
+            sellerElement = driver.find_element_by_xpath(
+                '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div[2]/wsp-visibility-switch/div[3]')
+
+        sellerIsBol = sellerElement.text == 'Verkoop door bol.com'
 
         sellerId = 'BOL'
         if(not sellerIsBol):
             sellerLink = driver.find_element_by_xpath(
-                '/html/body/div[1]/main/div/div[1]/div[2]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
+                '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
             sellerPath = sellerLink.get_attribute('href')
             sellerId = sellerPath.split("/")[-2]
 
