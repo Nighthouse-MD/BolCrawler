@@ -11,6 +11,19 @@ def list_all_by_productId(conn, productId):
     return rows
 
 
+def list_all_by_productId_from_date(conn, productId, fromDay):
+    """
+    Query all rows in the productSnapshot table
+    :param conn: the Connection object
+    :return:
+    """
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM productSnapshot WHERE productToTrackId = ? AND trackedOn > '" + fromDay + "%'",
+                (str(productId),))
+    rows = cur.fetchall()
+    return rows
+
+
 def create_productSnapshot(conn, productSnapshot):
     """
     Create a new productSnapshot into the productSnapshot table

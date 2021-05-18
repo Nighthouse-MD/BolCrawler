@@ -37,6 +37,15 @@ def delete_dailyParse_byProductToTrackId(conn, productToTrackId):
     return cur.lastrowid
 
 
+def delete_dailyParse_byProductToTrackId_fromDate(conn, productToTrackId, fromDay):
+    sql = " DELETE FROM dailyParse WHERE productToTrackId = ? AND dayStart > '" + \
+        fromDay + "%' "
+    cur = conn.cursor()
+    cur.execute(sql, (str(productToTrackId),))
+    conn.commit()
+    return cur.lastrowid
+
+
 """ CREATE TABLE IF NOT EXISTS dailyParse (
     id integer PRIMARY KEY,
     productToTrackId text NOT NULL,
