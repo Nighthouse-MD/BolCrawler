@@ -125,17 +125,18 @@ def handlerCrawlForOneProductAllSellers(product):
             else:
                 stockAmount = options[-1].get_attribute('value')
 
-            # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
-            fileName = RESULTS_FOLDER + product[1] + '_result.csv'
             trackedOn = datetime.now()
 
-            if(not path.exists(fileName)):
-                with open(fileName, 'w') as f:
-                    f.write('Date, Time, Seller Id, Price, Stock Amount \n')
+            # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
+            # fileName = RESULTS_FOLDER + product[1] + '_result.csv'
 
-            with open(fileName, 'a') as f:
-                f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
-                        ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
+            # if(not path.exists(fileName)):
+            #     with open(fileName, 'w') as f:
+            #         f.write('Date, Time, Seller Id, Price, Stock Amount \n')
+
+            # with open(fileName, 'a') as f:
+            #     f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
+            #             ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
 
             # add the row to the db
             conn = create_connection(Constants.DB_PATH)

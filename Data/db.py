@@ -74,6 +74,13 @@ def migrate():
                                         FOREIGN KEY(productToTrackId) REFERENCES productToTrack(id)
                                     ); """
 
+    sql_create_dailyParseCompleted_table = """ CREATE TABLE IF NOT EXISTS dailyParseCompleted (
+                                        id integer PRIMARY KEY,
+                                        dayStart DATETIME NOT NULL,
+                                        completedOn DATETIME NOT NULL,
+                                        error text
+                                    ); """
+
     # create a database connection
     create_db(Constants.DB_PATH)
     conn = create_connection(Constants.DB_PATH)
@@ -84,9 +91,7 @@ def migrate():
             create_table(conn, sql_create_productToTrack_table)
             create_table(conn, sql_create_productSnapshot_table)
             create_table(conn, sql_create_dailyParse_table)
-
-            # create_productToTrack(
-            #     conn, ('9200000055242553', 'kruiwagen wiel 4.00-8 luchtband lijnprofiel, asdiam. 20mm', datetime.now(), 'manual'))
+            # create_table(conn, sql_create_dailyParseCompleted_table)
         except Error as e:
             print(e)
     else:
