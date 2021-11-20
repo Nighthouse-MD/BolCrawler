@@ -32,6 +32,7 @@ def getStockAmountWith999Trick(driver, lastOption):
 
 def getProfile():
     profile = webdriver.FirefoxProfile()
+    profile.set_preference('intl.accept_languages', 'en-GB')
     profile.set_preference("browser.privatebrowsing.autostart", True)
     return profile
 
@@ -45,7 +46,7 @@ def handlerCrawlForOneProductAllSellers(product):
         driver = webdriver.Firefox(firefox_profile=getProfile(),
                                    executable_path=GECKODRIVER_PATH)
 
-        productSellersOverviewUrl = 'https://www.bol.com/nl/prijsoverzicht/productname/' + \
+        productSellersOverviewUrl = 'https://www.bol.com/nl/nl/prijsoverzicht/productname/' + \
             product[1] + '/?filter=new&sortOrder=asc&sort=price'
 
         driver.get(productSellersOverviewUrl)
@@ -66,6 +67,20 @@ def handlerCrawlForOneProductAllSellers(product):
 
         if(len(secondModalCloseButtonElements) > 0):
             secondModalCloseButtonElements[0].click()
+
+        driver.find_element_by_xpath(
+            '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click()
+
+        time.sleep(SLEEP_INVERVAL)
+        driver.find_element_by_xpath('//*[@id="dutch-language-input"]').click()
+
+        time.sleep(SLEEP_INVERVAL)
+        driver.find_element_by_xpath(
+            '//*[@id="country-belgium-input"]').click()
+
+        time.sleep(SLEEP_INVERVAL)
+        driver.find_element_by_xpath(
+            '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button').click()
 
         time.sleep(SLEEP_INVERVAL)
 
