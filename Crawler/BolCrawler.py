@@ -53,17 +53,19 @@ def handlerCrawlForOneProductAllSellers(product):
         time.sleep(1)
 
         # handle modals
-        firstModalAcceptButton = driver.find_element_by_xpath(
+        firstModalAcceptButtonElements = driver.find_elements_by_xpath(
             '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
 
-        firstModalAcceptButton.click()
+        if(len(firstModalAcceptButtonElements) > 0):
+            firstModalAcceptButtonElements[0].click()
 
         time.sleep(SLEEP_INVERVAL)
 
-        secondModalCloseButton = driver.find_element_by_xpath(
+        secondModalCloseButtonElements = driver.find_elements_by_xpath(
             '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button')
 
-        secondModalCloseButton.click()
+        if(len(secondModalCloseButtonElements) > 0):
+            secondModalCloseButtonElements[0].click()
 
         time.sleep(SLEEP_INVERVAL)
 

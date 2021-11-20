@@ -10900,3 +10900,42 @@ console.warn: SearchSettings: "get: No settings file exists, new profile?" (new 
 
 ###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
 
+1637447063376	geckodriver	INFO	Listening on 127.0.0.1:56184
+1637447066394	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofileAKJoB0"
+1637447066846	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofileAKJoB0\\search.json.mozlz4", (void 0)))
+1637447069657	Marionette	INFO	Listening on port 56192
+1637447070085	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1637447331337	geckodriver	INFO	Listening on 127.0.0.1:56362
+1637447334383	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofilemOwbrw"
+1637447334845	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofilemOwbrw\\search.json.mozlz4", (void 0)))
+1637447337593	Marionette	INFO	Listening on port 56370
+1637447338057	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1637447416259	geckodriver	INFO	Listening on 127.0.0.1:56463
+1637447419294	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofileB6zfj3"
+1637447419739	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofileB6zfj3\\search.json.mozlz4", (void 0)))
+1637447422534	Marionette	INFO	Listening on port 56471
+1637447422953	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1637447450271	Marionette	INFO	Stopped listening on port 56471
+
+###!!! [Parent][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1637447451059	geckodriver	INFO	Listening on 127.0.0.1:56572
+1637447454101	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile307qrR"
+1637447454577	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile307qrR\\search.json.mozlz4", (void 0)))
+1637447457453	Marionette	INFO	Listening on port 56580
+1637447457824	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1637447477134	geckodriver	INFO	Listening on 127.0.0.1:56667
+1637447480142	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile5aZoWF"
+1637447480602	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile5aZoWF\\search.json.mozlz4", (void 0)))
+1637447483375	Marionette	INFO	Listening on port 56676
+1637447483838	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
