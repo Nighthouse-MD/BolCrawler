@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from Data.dailyParse import DailyParse, create_dailyParse, delete_dailyParse_byProductToTrackId, delete_dailyParse_byProductToTrackId_fromDate
 from Data.productSnapshot import list_all_by_productId, list_all_by_productId_from_date
+from Data.productToTrack import inactivate_productToTrack
 from Data.db import create_connection
 from Constants import Constants
 import itertools
@@ -72,6 +73,8 @@ def parseSnapshotsForDaily(productId, parseAllDays):
 
             if(dailyParse.unitsSold > 0):
                 dailyParse.avgPrice = dailyParse.revenue / dailyParse.unitsSold
+
+            dailyParse.currentStock = sellerSnapshotsOnOneDay[totalAmountOfSnapshots - 1][5]
             dailyParses.append(dailyParse)
 
     conn = create_connection(Constants.DB_PATH)
@@ -92,6 +95,7 @@ def parseSnapshotsForDaily(productId, parseAllDays):
             dailyParseAllSellers.revenue += dailyParse.revenue
             dailyParseAllSellers.unitsSold += dailyParse.unitsSold
             dailyParseAllSellers.stockIncreaseSize += dailyParse.stockIncreaseSize
+            dailyParseAllSellers.currentStock += dailyParse.currentStock
 
         if(dailyParseAllSellers.unitsSold > 0):
             dailyParseAllSellers.avgPrice = dailyParseAllSellers.revenue / \
@@ -102,3 +106,6 @@ def parseSnapshotsForDaily(productId, parseAllDays):
     conn = create_connection(Constants.DB_PATH)
     for dailyParseAllSellers in dailyParsesAllSellers:
         create_dailyParse(conn, dailyParseAllSellers)
+
+    if len(snapshots) != 0 and all(x[3] == 'NIET LEVERBAAR' for x in snapshots):
+        inactivate_productToTrack(conn, productId)

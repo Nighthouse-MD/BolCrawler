@@ -53,14 +53,16 @@ def handlerCrawlForOneProductAllSellers(product):
         time.sleep(1)
 
         # handle modals
-        firstModelAcceptButton = driver.find_element_by_xpath(
-            '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
-        firstModelAcceptButton.click()
+        firstModalAcceptButton = driver.find_element_by_xpath(
+            '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+
+        firstModalAcceptButton.click()
 
         time.sleep(SLEEP_INVERVAL)
 
         secondModalCloseButton = driver.find_element_by_xpath(
-            '//*[@id="modalWindow"]/div[2]/button')
+            '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button')
+
         secondModalCloseButton.click()
 
         time.sleep(SLEEP_INVERVAL)
@@ -182,14 +184,15 @@ def handlerCrawlForOneProduct(product):
         time.sleep(1)
 
         # handle modals
-        firstModelAcceptButton = driver.find_element_by_xpath(
-            '//*[@id="modalWindow"]/div[2]/div[2]/wsp-consent-modal/div[2]/div/div[1]/button')
-        firstModelAcceptButton.click()
+        firstModalAcceptButton = driver.find_element_by_xpath(
+            '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+
+        firstModalAcceptButton.click()
 
         time.sleep(SLEEP_INVERVAL)
 
         secondModalCloseButton = driver.find_element_by_xpath(
-            '//*[@id="modalWindow"]/div[2]/button')
+            '/html/body/wsp-modal-window/div[2]/div[2]/div/wsp-toggle-visibility[1]/div/div[1]/wsp-switch-country/a')
         secondModalCloseButton.click()
 
         time.sleep(SLEEP_INVERVAL)

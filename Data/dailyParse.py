@@ -8,6 +8,7 @@ class DailyParse:
         self.avgPrice = 0
         self.unitsSold = 0
         self.stockIncreaseSize = 0
+        self.currentStock = 0
 
     def toTuple(self):
         return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.stockIncreaseSize, self.unitsSold)

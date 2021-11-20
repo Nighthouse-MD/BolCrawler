@@ -42,6 +42,19 @@ def create_table(conn, create_table_sql):
         print(e)
 
 
+def alter_table(conn, alter_table_sql):
+    """ alter a table from the alter_table_sql statement
+    :param conn: Connection object
+    :param alter_table_sql: a ALTER TABLE statement
+    :return:
+    """
+    try:
+        c = conn.cursor()
+        c.execute(alter_table_sql)
+    except Error as e:
+        print(e)
+
+
 def migrate():
     sql_create_productToTrack_table = """ CREATE TABLE IF NOT EXISTS productToTrack (
                                         id integer PRIMARY KEY,
@@ -50,6 +63,10 @@ def migrate():
                                         fetchedOn DATETIME,
                                         fetchedByCategoryId text
                                     ); """
+
+    sql_alter_productToTrack_table = """ ALTER TABLE productToTrack
+                                        ADD COLUMN inactive bool
+                                    """
 
     sql_create_productSnapshot_table = """ CREATE TABLE IF NOT EXISTS productSnapshot (
                                         id integer PRIMARY KEY,
@@ -81,6 +98,14 @@ def migrate():
                                         error text
                                     ); """
 
+    sql_alter_dailyParse_table = """ ALTER TABLE dailyParse
+                                     ADD COLUMN currentStock integer
+                                    """
+
+    sql_alter_productToTrack_table_add_inactivatedOn = """ ALTER TABLE productToTrack
+                                        ADD COLUMN inactivatedOn DATETIME
+                                    """
+
     # create a database connection
     create_db(Constants.DB_PATH)
     conn = create_connection(Constants.DB_PATH)
@@ -91,7 +116,10 @@ def migrate():
             create_table(conn, sql_create_productToTrack_table)
             create_table(conn, sql_create_productSnapshot_table)
             create_table(conn, sql_create_dailyParse_table)
+            alter_table(conn, sql_alter_productToTrack_table)
             # create_table(conn, sql_create_dailyParseCompleted_table)
+            alter_table(conn, sql_alter_dailyParse_table)
+            alter_table(conn, sql_alter_productToTrack_table_add_inactivatedOn)
         except Error as e:
             print(e)
     else:

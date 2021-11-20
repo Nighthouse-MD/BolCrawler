@@ -25,5 +25,5 @@ def fetchCategoryTopProducts(categoryId):
 
 
 if __name__ == '__main__':
-    fetchCategoryTopProducts('11373')
+    fetchCategoryTopProducts('22867')
     #7142, 11369, 11373
