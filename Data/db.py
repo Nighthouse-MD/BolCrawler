@@ -106,6 +106,16 @@ def migrate():
                                         ADD COLUMN inactivatedOn DATETIME
                                     """
 
+    sql_create_scraperLog_table = """ CREATE TABLE IF NOT EXISTS scraperLog (
+                                        id integer PRIMARY KEY,
+                                        loggedOn DATETIME NOT NULL,
+                                        level text NOT NULL,
+                                        message text NOT NULL,
+                                        exceptionType text NULL,
+                                        exception text NULL,
+                                        stackTrace text NOT NULL
+                                    ); """
+
     # create a database connection
     create_db(Constants.DB_PATH)
     conn = create_connection(Constants.DB_PATH)
@@ -120,6 +130,7 @@ def migrate():
             # create_table(conn, sql_create_dailyParseCompleted_table)
             alter_table(conn, sql_alter_dailyParse_table)
             alter_table(conn, sql_alter_productToTrack_table_add_inactivatedOn)
+            create_table(conn, sql_create_scraperLog_table)
         except Error as e:
             print(e)
     else:

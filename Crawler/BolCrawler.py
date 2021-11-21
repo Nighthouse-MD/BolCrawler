@@ -1,12 +1,15 @@
 import sys
+import traceback
 import csv
 import time
 import os.path
 from os import path
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from datetime import datetime
 from Data.productSnapshot import create_productSnapshot
 from Data.db import create_connection
+from Data.scraperLog import ScraperLog, create_log
 from Constants import Constants
 
 
@@ -106,13 +109,7 @@ def handlerCrawlForOneProductAllSellers(product):
                 priceOfOne = driver.find_element_by_id(
                     'tst_product_price').text.replace(',', '.').strip('€ ')
             except:
-                print(sys.exc_info()[0])
-                priceOfOne = -1
-                conn = create_connection(Constants.DB_PATH)
-                create_productSnapshot(
-                    conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
-                driver.close()
-                return
+                return handleException(driver, product)
 
             # check for non bol seller element location
             sellerElements = driver.find_elements_by_xpath(
@@ -171,13 +168,7 @@ def handlerCrawlForOneProductAllSellers(product):
             driver.get(productSellersOverviewUrl)
         driver.close()
     except:
-        print(sys.exc_info()[0])
-        priceOfOne = -1
-        conn = create_connection(Constants.DB_PATH)
-        create_productSnapshot(
-            conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
-        driver.close()
-        return
+        return handleException(driver, product)
 
     # foreach element in winkelwagen links
     # click it, and go to basket
@@ -219,13 +210,7 @@ def handlerCrawlForOneProduct(product):
             priceOfOne = driver.find_element_by_class_name(
                 'promo-price').text.replace('\n', '.').strip('-').strip('.')
         except:
-            print(sys.exc_info()[0])
-            priceOfOne = -1
-            conn = create_connection(Constants.DB_PATH)
-            create_productSnapshot(
-                conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
-            driver.close()
-            return
+            return handleException(driver, product)
 
         # check for non bol seller element location
         sellerElement = driver.find_element_by_xpath(
@@ -287,13 +272,36 @@ def handlerCrawlForOneProduct(product):
         create_productSnapshot(
             conn, (product[0], trackedOn, sellerId, priceOfOne, stockAmount))
     except:
-        print(sys.exc_info()[0])
-        priceOfOne = -1
-        conn = create_connection(Constants.DB_PATH)
-        create_productSnapshot(
-            conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
-        driver.close()
-        return
+        return handleException(driver, product)
+
+
+def handleException(driver, product):
+    ex_type, ex_value, ex_traceback = sys.exc_info()
+
+    # Extract unformatter stack traces as tuples
+    trace_back = traceback.extract_tb(ex_traceback)
+
+    # Format stacktrace
+    stack_trace = list()
+
+    for trace in trace_back:
+        stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
+            trace[0], trace[1], trace[2], trace[3]))
+
+    print("Exception type : %s " % ex_type.__name__)
+    print("Exception message : %s" % ex_value)
+    print("Stack trace : %s" % stack_trace)
+
+    conn = create_connection(Constants.DB_PATH)
+    create_productSnapshot(
+        conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
+    create_log(conn, ScraperLog(
+        f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
+    try:
+        driver.quit()
+    except WebDriverException:
+        pass
+    return
 
 
 # all offers of a seller page https://www.bol.com/nl/c/{anything}/{SELLER_ID}/
