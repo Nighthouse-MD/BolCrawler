@@ -4,6 +4,7 @@ import csv
 import time
 import os.path
 from os import path
+import os
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from datetime import datetime
@@ -34,7 +35,7 @@ def getStockAmountWith999Trick(driver, lastOption):
 
 
 def getProfile():
-    profile = webdriver.FirefoxProfile()
+    profile = webdriver.FirefoxProfile(service_log_path=os.devnull)
     profile.set_preference('intl.accept_languages', 'en-GB')
     profile.set_preference("browser.privatebrowsing.autostart", True)
     return profile
