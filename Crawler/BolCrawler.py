@@ -35,7 +35,7 @@ def getStockAmountWith999Trick(driver, lastOption):
 
 
 def getProfile():
-    profile = webdriver.FirefoxProfile(service_log_path=os.devnull)
+    profile = webdriver.FirefoxProfile()
     profile.set_preference('intl.accept_languages', 'en-GB')
     profile.set_preference("browser.privatebrowsing.autostart", True)
     return profile

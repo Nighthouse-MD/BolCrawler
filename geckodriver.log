@@ -13259,3 +13259,8 @@ JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't fin
 console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofileEdWhzf\\search.json.mozlz4", (void 0)))
 1637522469562	Marionette	INFO	Listening on port 61557
 1637522469675	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1637540276316	geckodriver	INFO	Listening on 127.0.0.1:58647
+1637540279379	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-foreground" "-no-remote" "-profile" "C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile7A6C4x"
+1637540280077	Marionette	INFO	Marionette enabled
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\eclipse\\AppData\\Local\\Temp\\rust_mozprofile7A6C4x\\search.json.mozlz4", (void 0)))
