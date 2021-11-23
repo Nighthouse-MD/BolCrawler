@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class DailyParse:
     def __init__(self, productToTrackId, sellerId):
         self.productToTrackId = productToTrackId
@@ -9,9 +12,10 @@ class DailyParse:
         self.unitsSold = 0
         self.stockIncreaseSize = 0
         self.currentStock = 0
+        self.parsedOn = datetime.now()
 
     def toTuple(self):
-        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.stockIncreaseSize, self.unitsSold)
+        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.stockIncreaseSize, self.unitsSold, self.parsedOn)
 
 
 def create_dailyParse(conn, dailyParse: DailyParse):
@@ -21,8 +25,8 @@ def create_dailyParse(conn, dailyParse: DailyParse):
     :param dailyParse:
     :return: dailyParse id
     """
-    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,revenue,sellerId,stockIncreaseSize,unitsSold)
-              VALUES(?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,revenue,sellerId,stockIncreaseSize,unitsSold,parsedOn)
+              VALUES(?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, dailyParse.toTuple())
     conn.commit()
@@ -57,5 +61,6 @@ def delete_dailyParse_byProductToTrackId_fromDate(conn, productToTrackId, fromDa
     avgPrice DOUBLE NOT NULL,
     unitsSold integer NOT NULL,
     stockIncreaseSize integer NOT NULL,
+    parsedOn DATETIME NOT NULL,
     FOREIGN KEY(productToTrackId) REFERENCES productToTrack(id)
 ); """

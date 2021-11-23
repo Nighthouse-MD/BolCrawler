@@ -116,6 +116,10 @@ def migrate():
                                         stackTrace text NOT NULL
                                     ); """
 
+    sql_alter_dailyParse_table_add_parsedOn = """ ALTER TABLE dailyParse
+                                        ADD COLUMN parsedOn DATETIME
+                                    """
+
     # create a database connection
     create_db(Constants.DB_PATH)
     conn = create_connection(Constants.DB_PATH)
@@ -131,6 +135,7 @@ def migrate():
             alter_table(conn, sql_alter_dailyParse_table)
             alter_table(conn, sql_alter_productToTrack_table_add_inactivatedOn)
             create_table(conn, sql_create_scraperLog_table)
+            alter_table(conn, sql_alter_dailyParse_table_add_parsedOn)
         except Error as e:
             print(e)
     else:
