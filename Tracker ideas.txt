@@ -2,7 +2,15 @@ Track top seller products: the idea is when finding a succesful product, it is l
 -> for top selling products with a lot of omzet, get the top seller and his percentage of the market omzet
 -> go to that sellers library of products, and start tracking these, and look for large omzet products that
 
+-> Track This Seller feature, go to this sellers overview page, pick up all his products, add these to products to track
+
 Time bound sales data
 It is possible to see what moths of the year/days of the week/time of day a certain product sells the most.
 This info is useful for own products, or for getting an idea of how to get into certain seasonal products on time.
 This info can also be used to target advertising more efficiently.
+
+
+
+SellersToTrack table
+Once a day, check their overview page for new products and add these to the list of products to track.
+Ability to stop tracking a seller, see the last check date.

@@ -2,9 +2,10 @@ from datetime import datetime
 
 
 class DailyParse:
-    def __init__(self, productToTrackId, sellerId):
+    def __init__(self, productToTrackId, sellerId, sellerName):
         self.productToTrackId = productToTrackId
         self.sellerId = sellerId
+        self.sellerName = sellerName
         self.dayStart = None
         self.dayEnd = None
         self.revenue = 0
@@ -15,7 +16,7 @@ class DailyParse:
         self.parsedOn = datetime.now()
 
     def toTuple(self):
-        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.stockIncreaseSize, self.unitsSold, self.parsedOn)
+        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.sellerName, self.stockIncreaseSize, self.unitsSold, self.currentStock, self.parsedOn)
 
 
 def create_dailyParse(conn, dailyParse: DailyParse):
@@ -25,8 +26,8 @@ def create_dailyParse(conn, dailyParse: DailyParse):
     :param dailyParse:
     :return: dailyParse id
     """
-    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,revenue,sellerId,stockIncreaseSize,unitsSold,parsedOn)
-              VALUES(?,?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,revenue,sellerId,sellerName,stockIncreaseSize,unitsSold,currentStock,parsedOn)
+              VALUES(?,?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, dailyParse.toTuple())
     conn.commit()
@@ -55,6 +56,7 @@ def delete_dailyParse_byProductToTrackId_fromDate(conn, productToTrackId, fromDa
     id integer PRIMARY KEY,
     productToTrackId text NOT NULL,
     sellerId text NOT NULL,
+    sellerName text,
     dayStart DATETIME NOT NULL,
     dayEnd DATETIME NOT NULL,
     revenue DOUBLE NOT NULL,

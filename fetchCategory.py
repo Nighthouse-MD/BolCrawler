@@ -20,7 +20,7 @@ def fetchCategoryTopProducts(categoryId):
 
     for product in products:
         create_productToTrack(
-            conn, (product['id'], product['title'], fetchedOn, categoryId))
+            conn, (product['id'], product['ean'], product['title'], fetchedOn, categoryId))
         print('{} {}'.format(product['id'], product['title']))
 
 

@@ -31,8 +31,8 @@ def create_productSnapshot(conn, productSnapshot):
     :param productSnapshot:
     :return: productSnapshot id
     """
-    sql = ''' INSERT INTO productSnapshot(productToTrackId,trackedOn,sellerId,price,stockAmount)
-              VALUES(?,?,?,?,?) '''
+    sql = ''' INSERT INTO productSnapshot(productToTrackId,trackedOn,sellerId,sellerName,price,stockAmount)
+              VALUES(?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, productSnapshot)
     conn.commit()
@@ -44,6 +44,7 @@ def create_productSnapshot(conn, productSnapshot):
     productToTrackId text NOT NULL,
     trackedOn DATETIME NOT NULL,
     sellerId text NOT NULL,
+    sellerName text NOT NULL,
     price DOUBLE NOT NULL,
     stockAmount integer NOT NULL,
     FOREIGN KEY(productToTrackId) REFERENCES productToTrack(id)

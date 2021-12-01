@@ -44,11 +44,11 @@ def parseSnapshotsForDaily(productId, parseAllDays):
     dailyParses = []
     for sellerListsOfOneDay in listsByDay:
         for sellerSnapshotsOnOneDay in sellerListsOfOneDay:
-            if(sellerSnapshotsOnOneDay[0][3] == 'NIET LEVERBAAR'):
+            if(sellerSnapshotsOnOneDay[0][3] == 'NO SELLER'):
                 continue
 
             dailyParse = DailyParse(
-                sellerSnapshotsOnOneDay[0][1], sellerSnapshotsOnOneDay[0][3])
+                sellerSnapshotsOnOneDay[0][1], sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6])
             dailyParse.dayStart = parse(sellerSnapshotsOnOneDay[0][2]).date()
             dailyParse.dayEnd = dailyParse.dayStart + timedelta(days=1)
 
@@ -87,7 +87,7 @@ def parseSnapshotsForDaily(productId, parseAllDays):
     for day, dailyGrp in itertools.groupby(dailyParses, key=lambda x: x.dayStart):
         listOfOneDay = list(dailyGrp)
         dailyParseAllSellers = DailyParse(
-            listOfOneDay[0].productToTrackId, 'ALL')
+            listOfOneDay[0].productToTrackId, 'ALL', 'ALL')
         dailyParseAllSellers.dayStart = listOfOneDay[0].dayStart
         dailyParseAllSellers.dayEnd = listOfOneDay[0].dayEnd
 
@@ -107,5 +107,5 @@ def parseSnapshotsForDaily(productId, parseAllDays):
     for dailyParseAllSellers in dailyParsesAllSellers:
         create_dailyParse(conn, dailyParseAllSellers)
 
-    if len(snapshots) != 0 and all(x[3] == 'NIET LEVERBAAR' for x in snapshots):
+    if len(snapshots) != 0 and all(x[3] == 'NO SELLER' for x in snapshots):
         inactivate_productToTrack(conn, productId)

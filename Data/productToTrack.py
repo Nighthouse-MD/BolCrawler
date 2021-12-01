@@ -22,12 +22,19 @@ def inactivate_productToTrack(conn, productId):
     conn.commit()
 
 
+def updateEan_productToTrack(conn, productId, ean):
+    cur = conn.cursor()
+    cur.execute(
+        '''UPDATE productToTrack SET ean = ? WHERE productId = ?''', (ean, productId))
+    conn.commit()
+
+
 def create_productToTrack(conn, product):
     """
     Create a new productToTrack into the productToTrack table: param conn:: param productToTrack: : return: productToTrack id
     """
-    sql = ''' INSERT INTO productToTrack(productId,name,fetchedOn,fetchedByCategoryId)
-              VALUES(?,?,?,?) '''
+    sql = ''' INSERT INTO productToTrack(productId,ean,name,fetchedOn,fetchedByCategoryId)
+              VALUES(?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, product)
     conn.commit()

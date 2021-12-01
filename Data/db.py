@@ -3,6 +3,8 @@ from sqlite3 import Error
 from Constants import Constants
 from .productToTrack import create_productToTrack
 from datetime import datetime
+from Data.productToTrack import list_all, updateEan_productToTrack
+import requests
 
 
 def create_connection(db_file):
@@ -55,6 +57,31 @@ def alter_table(conn, alter_table_sql):
         print(e)
 
 
+def isEanMissing(product):
+    return product[7] == None
+
+
+def checkForMissingEans():
+    conn = create_connection(Constants.DB_PATH)
+    trackedProducts = list_all(conn)
+    productsWithMissingEan = list(filter(isEanMissing, trackedProducts))
+
+    for i in range(len(productsWithMissingEan)):
+        try:
+            productId = productsWithMissingEan[i][1]
+            resp = requests.get(
+                'https://api.bol.com/catalog/v4/products/{}?apikey={}&offers=cheapest&includeAttributes=false&format=json'.format(productId, Constants.BOL_API_KEY))
+
+            if resp.status_code != 200:
+                # This means something went wrong.
+                raise ApiError('GET /lists/ {}'.format(categoryId))
+
+            productEan = resp.json()['products'][0]['ean']
+            updateEan_productToTrack(conn, productId, productEan)
+        except Error as e:
+            print(e)
+
+
 def migrate():
     sql_create_productToTrack_table = """ CREATE TABLE IF NOT EXISTS productToTrack (
                                         id integer PRIMARY KEY,
@@ -66,6 +93,10 @@ def migrate():
 
     sql_alter_productToTrack_table = """ ALTER TABLE productToTrack
                                         ADD COLUMN inactive bool
+                                    """
+
+    sql_alter_productToTrack_table_add_ean = """ ALTER TABLE productToTrack
+                                        ADD COLUMN ean text
                                     """
 
     sql_create_productSnapshot_table = """ CREATE TABLE IF NOT EXISTS productSnapshot (
@@ -120,6 +151,18 @@ def migrate():
                                         ADD COLUMN parsedOn DATETIME
                                     """
 
+    sql_alter_dailyParse_table_add_parsedOn = """ ALTER TABLE dailyParse
+                                        ADD COLUMN parsedOn DATETIME
+                                    """
+
+    sql_alter_dailyParse_table_add_sellerName = """ ALTER TABLE dailyParse
+                                        ADD COLUMN sellerName text
+                                    """
+
+    sql_alter_productSnapshot_table_add_sellerName = """ ALTER TABLE productSnapshot
+                                        ADD COLUMN sellerName text
+                                    """
+
     # create a database connection
     create_db(Constants.DB_PATH)
     conn = create_connection(Constants.DB_PATH)
@@ -136,6 +179,9 @@ def migrate():
             alter_table(conn, sql_alter_productToTrack_table_add_inactivatedOn)
             create_table(conn, sql_create_scraperLog_table)
             alter_table(conn, sql_alter_dailyParse_table_add_parsedOn)
+            alter_table(conn, sql_alter_dailyParse_table_add_sellerName)
+            alter_table(conn, sql_alter_productSnapshot_table_add_sellerName)
+            alter_table(conn, sql_alter_productToTrack_table_add_ean)
         except Error as e:
             print(e)
     else:

@@ -88,6 +88,9 @@ def handlerCrawlForOneProductAllSellers(product):
 
         time.sleep(SLEEP_INVERVAL)
 
+    except:
+        return handleException(driver, product, 'MODAL ERROR', 'MODAL ERROR')
+    try:
         amountOfInWinkelwagenLinks = len(driver.find_elements_by_link_text(
             'In winkelwagen'))
 
@@ -110,7 +113,7 @@ def handlerCrawlForOneProductAllSellers(product):
                 priceOfOne = driver.find_element_by_id(
                     'tst_product_price').text.replace(',', '.').strip('€ ')
             except:
-                return handleException(driver, product)
+                return handleException(driver, product, 'PRICE ERROR', 'PRICE ERROR')
 
             # check for non bol seller element location
             sellerElements = driver.find_elements_by_xpath(
@@ -121,13 +124,18 @@ def handlerCrawlForOneProductAllSellers(product):
             if(sellerElements == None or len(sellerElements) == 0):
                 sellerIsBol = True
 
-            sellerId = 'BOL'
+            sellerId = 'NO SELLER'
+            sellerName = 'NO SELLER'
 
             if(not sellerIsBol):
                 sellerLink = driver.find_element_by_xpath(
                     '/html/body/div/main/div[3]/div/div/div[2]/div/div[2]/div/wsp-popup-fragment/a')
                 sellerPath = sellerLink.get_attribute('href')
                 sellerId = sellerPath.split("/")[-2]
+                sellerName = sellerLink.text
+            else:
+                sellerName = 'BOL'
+                sellerId = 'BOL'
 
             # check if there is a 'meer' option
             hasMoreThanTenOptions = False
@@ -158,7 +166,7 @@ def handlerCrawlForOneProductAllSellers(product):
             # add the row to the db
             conn = create_connection(Constants.DB_PATH)
             create_productSnapshot(
-                conn, (product[0], trackedOn, sellerId, priceOfOne, stockAmount))
+                conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
 
             verwijderButton = driver.find_element_by_link_text(
                 'Verwijder').click()
@@ -169,7 +177,7 @@ def handlerCrawlForOneProductAllSellers(product):
             driver.get(productSellersOverviewUrl)
         driver.close()
     except:
-        return handleException(driver, product)
+        return handleException(driver, product, sellerId, sellerName)
 
     # foreach element in winkelwagen links
     # click it, and go to basket
@@ -211,7 +219,7 @@ def handlerCrawlForOneProduct(product):
             priceOfOne = driver.find_element_by_class_name(
                 'promo-price').text.replace('\n', '.').strip('-').strip('.')
         except:
-            return handleException(driver, product)
+            return handleException(driver, product, 'PROMO ERROR', 'PROMO ERROR')
 
         # check for non bol seller element location
         sellerElement = driver.find_element_by_xpath(
@@ -223,12 +231,18 @@ def handlerCrawlForOneProduct(product):
 
         sellerIsBol = sellerElement.text == 'Verkoop door bol.com'
 
-        sellerId = 'BOL'
+        sellerId = 'NO SELLER'
+        sellerName = 'NO SELLER'
+
         if(not sellerIsBol):
             sellerLink = driver.find_element_by_xpath(
                 '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
             sellerPath = sellerLink.get_attribute('href')
             sellerId = sellerPath.split("/")[-2]
+            sellerName = sellerLink.text
+        else:
+            sellerId = 'BOL'
+            sellerName = 'BOL'
 
         # add product to cart
         addToCartButton = driver.find_element_by_xpath(
@@ -271,12 +285,12 @@ def handlerCrawlForOneProduct(product):
         # add the row to the db
         conn = create_connection(Constants.DB_PATH)
         create_productSnapshot(
-            conn, (product[0], trackedOn, sellerId, priceOfOne, stockAmount))
+            conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
     except:
-        return handleException(driver, product)
+        return handleException(driver, product, sellerId, sellerName)
 
 
-def handleException(driver, product):
+def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER'):
     ex_type, ex_value, ex_traceback = sys.exc_info()
 
     # Extract unformatter stack traces as tuples
@@ -295,7 +309,7 @@ def handleException(driver, product):
 
     conn = create_connection(Constants.DB_PATH)
     create_productSnapshot(
-        conn, (product[0], datetime.now(), 'NIET LEVERBAAR', -1, 0))
+        conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0))
     create_log(conn, ScraperLog(
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
     try:
