@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class DailyParse:
-    def __init__(self, productToTrackId, sellerId, sellerName):
+    def __init__(self, productToTrackId, sellerId, sellerName, ean, type):
         self.productToTrackId = productToTrackId
         self.sellerId = sellerId
         self.sellerName = sellerName
@@ -14,9 +14,11 @@ class DailyParse:
         self.stockIncreaseSize = 0
         self.currentStock = 0
         self.parsedOn = datetime.now()
+        self.ean = ean
+        self.type = type
 
     def toTuple(self):
-        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.revenue, self.sellerId, self.sellerName, self.stockIncreaseSize, self.unitsSold, self.currentStock, self.parsedOn)
+        return (self.avgPrice, self.dayStart, self.dayEnd, self.productToTrackId, self.ean, self.revenue, self.sellerId, self.sellerName, self.stockIncreaseSize, self.unitsSold, self.currentStock, self.parsedOn, self.type)
 
 
 def create_dailyParse(conn, dailyParse: DailyParse):
@@ -26,8 +28,8 @@ def create_dailyParse(conn, dailyParse: DailyParse):
     :param dailyParse:
     :return: dailyParse id
     """
-    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,revenue,sellerId,sellerName,stockIncreaseSize,unitsSold,currentStock,parsedOn)
-              VALUES(?,?,?,?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,ean,revenue,sellerId,sellerName,stockIncreaseSize,unitsSold,currentStock,parsedOn,type)
+              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, dailyParse.toTuple())
     conn.commit()

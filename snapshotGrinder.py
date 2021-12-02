@@ -14,4 +14,4 @@ def run():
 
     for i in range(len(trackedProducts)):
         parseSnapshotsForDaily(
-            trackedProducts[i][0], Constants.DAILY_PARSE_ALL)
+            trackedProducts[i][0], trackedProducts[i][7], Constants.DAILY_PARSE_ALL)

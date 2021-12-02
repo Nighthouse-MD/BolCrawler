@@ -9,17 +9,18 @@ from dateutil.parser import parse
 from operator import itemgetter
 
 
-def parseSnapshotsForDaily(productId, parseAllDays):
+def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
     conn = create_connection(Constants.DB_PATH)
 
     if(parseAllDays):
-        snapshots = list_all_by_productId(conn, productId)
-        delete_dailyParse_byProductToTrackId(conn, productId)
+        snapshots = list_all_by_productId(conn, productToTrackId)
+        delete_dailyParse_byProductToTrackId(conn, productToTrackId)
     else:
         fromDate = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
-        snapshots = list_all_by_productId_from_date(conn, productId, fromDate)
+        snapshots = list_all_by_productId_from_date(
+            conn, productToTrackId, fromDate)
         delete_dailyParse_byProductToTrackId_fromDate(
-            conn, productId, fromDate)
+            conn, productToTrackId, fromDate)
 
     listsByDay = []
     for timestamp, dailyGrp in itertools.groupby(snapshots, key=lambda x: parse(x[2]).date()):
@@ -48,7 +49,7 @@ def parseSnapshotsForDaily(productId, parseAllDays):
                 continue
 
             dailyParse = DailyParse(
-                sellerSnapshotsOnOneDay[0][1], sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6])
+                productToTrackId, sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6], ean, 'D')
             dailyParse.dayStart = parse(sellerSnapshotsOnOneDay[0][2]).date()
             dailyParse.dayEnd = dailyParse.dayStart + timedelta(days=1)
 
@@ -87,7 +88,7 @@ def parseSnapshotsForDaily(productId, parseAllDays):
     for day, dailyGrp in itertools.groupby(dailyParses, key=lambda x: x.dayStart):
         listOfOneDay = list(dailyGrp)
         dailyParseAllSellers = DailyParse(
-            listOfOneDay[0].productToTrackId, 'ALL', 'ALL')
+            productToTrackId, 'ALL', 'ALL', ean, 'D')
         dailyParseAllSellers.dayStart = listOfOneDay[0].dayStart
         dailyParseAllSellers.dayEnd = listOfOneDay[0].dayEnd
 
@@ -108,4 +109,4 @@ def parseSnapshotsForDaily(productId, parseAllDays):
         create_dailyParse(conn, dailyParseAllSellers)
 
     if len(snapshots) != 0 and all(x[3] == 'NO SELLER' for x in snapshots):
-        inactivate_productToTrack(conn, productId)
+        inactivate_productToTrack(conn, productToTrackId)
