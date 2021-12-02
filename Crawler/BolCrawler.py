@@ -117,7 +117,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             # add to cart
             inWinkelwagenLinks[i].click()
 
-            time.sleep(1)
+            time.sleep(2)
 
             # go to cart
             driver.get('https://www.bol.com/nl/order/basket.html')
