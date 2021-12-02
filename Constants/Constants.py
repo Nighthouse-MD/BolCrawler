@@ -1,4 +1,4 @@
-SLEEP_INVERVAL = 0.3
+SLEEP_INVERVAL = 0.0
 
 RESULTS_FOLDER = 'C:\\boltracker\\csv results\\'
 

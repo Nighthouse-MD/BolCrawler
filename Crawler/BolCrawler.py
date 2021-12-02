@@ -25,7 +25,6 @@ def getStockAmountWith999Trick(driver, lastOption):
     amountInfputConfirmButton = driver.find_element_by_class_name(
         'js_quantity_overlay_ok')
     amountInfputConfirmButton.click()
-    time.sleep(SLEEP_INVERVAL)
 
     quantityDropDown = driver.find_element_by_id('tst_quantity_dropdown')
     options = quantityDropDown.find_elements_by_tag_name('option')
@@ -41,52 +40,69 @@ def getProfile():
     return profile
 
 
-def handlerCrawlForOneProductAllSellers(product):
-    try:
-        SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
-        RESULTS_FOLDER = Constants.RESULTS_FOLDER
-        GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+def findElementByXPathUntilFound(driver, xpath):
+    result = None
+    count = 0
+    while result is None and count < 10:
+        try:
+            # connect
+            result = driver.find_element_by_xpath(xpath)
+        except:
+            count = count + 1
+            time.sleep(0.1)
+            pass
+    return result
 
-        driver = webdriver.Firefox(firefox_profile=getProfile(),
-                                   executable_path=GECKODRIVER_PATH)
+
+def findElementsByXPathUntilFound(driver, xpath, amountOfTries=5):
+    result = None
+    count = 0
+    while (result is None or len(result) < 1) and count < amountOfTries:
+        # connect
+        result = driver.find_elements_by_xpath(xpath)
+        count = count + 1
+        time.sleep(0.1)
+    return result
+
+
+def handlerCrawlForOneProductAllSellers(driver, product):
+    try:
+        if(driver is None):
+            GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+            driver = webdriver.Firefox(firefox_profile=getProfile(),
+                                       executable_path=GECKODRIVER_PATH)
+        else:
+            driver.delete_all_cookies
 
         productSellersOverviewUrl = 'https://www.bol.com/nl/nl/prijsoverzicht/productname/' + \
             product[1] + '/?filter=new&sortOrder=asc&sort=price'
 
         driver.get(productSellersOverviewUrl)
 
-        time.sleep(1)
-
         # handle modals
-        firstModalAcceptButtonElements = driver.find_elements_by_xpath(
-            '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+        firstModalAcceptButtonElements = findElementsByXPathUntilFound(driver,
+                                                                       '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
 
         if(len(firstModalAcceptButtonElements) > 0):
             firstModalAcceptButtonElements[0].click()
 
-        time.sleep(SLEEP_INVERVAL)
-
-        secondModalCloseButtonElements = driver.find_elements_by_xpath(
-            '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button')
+        secondModalCloseButtonElements = findElementsByXPathUntilFound(driver,
+                                                                       '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button', 2)
 
         if(len(secondModalCloseButtonElements) > 0):
             secondModalCloseButtonElements[0].click()
 
-        driver.find_element_by_xpath(
-            '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click()
+        findElementByXPathUntilFound(driver,
+                                     '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click()
 
-        time.sleep(SLEEP_INVERVAL)
-        driver.find_element_by_xpath('//*[@id="dutch-language-input"]').click()
+        findElementByXPathUntilFound(
+            driver, '//*[@id="dutch-language-input"]').click()
 
-        time.sleep(SLEEP_INVERVAL)
-        driver.find_element_by_xpath(
-            '//*[@id="country-belgium-input"]').click()
+        findElementByXPathUntilFound(driver,
+                                     '//*[@id="country-belgium-input"]').click()
 
-        time.sleep(SLEEP_INVERVAL)
-        driver.find_element_by_xpath(
-            '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button').click()
-
-        time.sleep(SLEEP_INVERVAL)
+        findElementByXPathUntilFound(driver,
+                                     '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button').click()
 
     except:
         return handleException(driver, product, 'MODAL ERROR', 'MODAL ERROR')
@@ -101,12 +117,10 @@ def handlerCrawlForOneProductAllSellers(product):
             # add to cart
             inWinkelwagenLinks[i].click()
 
-            time.sleep(SLEEP_INVERVAL)
+            time.sleep(0.1)
 
             # go to cart
             driver.get('https://www.bol.com/nl/order/basket.html')
-
-            time.sleep(1)
 
             # get price and sellerId
             try:
@@ -152,17 +166,6 @@ def handlerCrawlForOneProductAllSellers(product):
 
             trackedOn = datetime.now()
 
-            # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
-            # fileName = RESULTS_FOLDER + product[1] + '_result.csv'
-
-            # if(not path.exists(fileName)):
-            #     with open(fileName, 'w') as f:
-            #         f.write('Date, Time, Seller Id, Price, Stock Amount \n')
-
-            # with open(fileName, 'a') as f:
-            #     f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
-            #             ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
-
             # add the row to the db
             conn = create_connection(Constants.DB_PATH)
             create_productSnapshot(
@@ -175,7 +178,7 @@ def handlerCrawlForOneProductAllSellers(product):
                 product[1] + '/?filter=new&sortOrder=asc&sort=price'
 
             driver.get(productSellersOverviewUrl)
-        driver.close()
+        # driver.close()
     except:
         return handleException(driver, product, sellerId, sellerName)
 
@@ -188,106 +191,106 @@ def handlerCrawlForOneProductAllSellers(product):
     # go back to prijsoverzicht page and click the next item in this list
 
 
-def handlerCrawlForOneProduct(product):
-    try:
-        SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
-        RESULTS_FOLDER = Constants.RESULTS_FOLDER
-        GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+# def handlerCrawlForOneProduct(product):
+#     try:
+#         SLEEP_INVERVAL = Constants.SLEEP_INVERVAL
+#         RESULTS_FOLDER = Constants.RESULTS_FOLDER
+#         GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
 
-        driver = webdriver.Firefox(firefox_profile=getProfile(),
-                                   executable_path=GECKODRIVER_PATH)
-        driver.get('https://www.bol.com/nl/p/productName/' + product[1])
+#         driver = webdriver.Firefox(firefox_profile=getProfile(),
+#                                    executable_path=GECKODRIVER_PATH)
+#         driver.get('https://www.bol.com/nl/p/productName/' + product[1])
 
-        time.sleep(1)
+#         time.sleep(0.3)
 
-        # handle modals
-        firstModalAcceptButton = driver.find_element_by_xpath(
-            '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+#         # handle modals
+#         firstModalAcceptButton = driver.find_element_by_xpath(
+#             '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
 
-        firstModalAcceptButton.click()
+#         firstModalAcceptButton.click()
 
-        time.sleep(SLEEP_INVERVAL)
+#         time.sleep(SLEEP_INVERVAL)
 
-        secondModalCloseButton = driver.find_element_by_xpath(
-            '/html/body/wsp-modal-window/div[2]/div[2]/div/wsp-toggle-visibility[1]/div/div[1]/wsp-switch-country/a')
-        secondModalCloseButton.click()
+#         secondModalCloseButton = driver.find_element_by_xpath(
+#             '/html/body/wsp-modal-window/div[2]/div[2]/div/wsp-toggle-visibility[1]/div/div[1]/wsp-switch-country/a')
+#         secondModalCloseButton.click()
 
-        time.sleep(SLEEP_INVERVAL)
+#         time.sleep(SLEEP_INVERVAL)
 
-        # get price and sellerId
-        try:
-            priceOfOne = driver.find_element_by_class_name(
-                'promo-price').text.replace('\n', '.').strip('-').strip('.')
-        except:
-            return handleException(driver, product, 'PROMO ERROR', 'PROMO ERROR')
+#         # get price and sellerId
+#         try:
+#             priceOfOne = driver.find_element_by_class_name(
+#                 'promo-price').text.replace('\n', '.').strip('-').strip('.')
+#         except:
+#             return handleException(driver, product, 'PROMO ERROR', 'PROMO ERROR')
 
-        # check for non bol seller element location
-        sellerElement = driver.find_element_by_xpath(
-            '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]')
+#         # check for non bol seller element location
+#         sellerElement = driver.find_element_by_xpath(
+#             '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]')
 
-        if(sellerElement == None):
-            sellerElement = driver.find_element_by_xpath(
-                '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div[2]/wsp-visibility-switch/div[3]')
+#         if(sellerElement == None):
+#             sellerElement = driver.find_element_by_xpath(
+#                 '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div[2]/wsp-visibility-switch/div[3]')
 
-        sellerIsBol = sellerElement.text == 'Verkoop door bol.com'
+#         sellerIsBol = sellerElement.text == 'Verkoop door bol.com'
 
-        sellerId = 'NO SELLER'
-        sellerName = 'NO SELLER'
+#         sellerId = 'NO SELLER'
+#         sellerName = 'NO SELLER'
 
-        if(not sellerIsBol):
-            sellerLink = driver.find_element_by_xpath(
-                '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
-            sellerPath = sellerLink.get_attribute('href')
-            sellerId = sellerPath.split("/")[-2]
-            sellerName = sellerLink.text
-        else:
-            sellerId = 'BOL'
-            sellerName = 'BOL'
+#         if(not sellerIsBol):
+#             sellerLink = driver.find_element_by_xpath(
+#                 '/html/body/div[1]/main/div/div[1]/div[5]/div[2]/div[1]/div/wsp-visibility-switch/div[3]/wsp-popup-fragment/a')
+#             sellerPath = sellerLink.get_attribute('href')
+#             sellerId = sellerPath.split("/")[-2]
+#             sellerName = sellerLink.text
+#         else:
+#             sellerId = 'BOL'
+#             sellerName = 'BOL'
 
-        # add product to cart
-        addToCartButton = driver.find_element_by_xpath(
-            '//*[@id="' + product[1] + '"]')
-        addToCartButton.click()
+#         # add product to cart
+#         addToCartButton = driver.find_element_by_xpath(
+#             '//*[@id="' + product[1] + '"]')
+#         addToCartButton.click()
 
-        time.sleep(SLEEP_INVERVAL)
+#         time.sleep(SLEEP_INVERVAL)
 
-        # go to cart
-        driver.get('https://www.bol.com/nl/order/basket.html')
+#         # go to cart
+#         driver.get('https://www.bol.com/nl/order/basket.html')
 
-        time.sleep(1)
+#         time.sleep(0.3)
 
-        # check if there is a 'meer' option
-        hasMoreThanTenOptions = False
-        stockAmount = -1
+#         # check if there is a 'meer' option
+#         hasMoreThanTenOptions = False
+#         stockAmount = -1
 
-        quantityDropDown = driver.find_element_by_id('tst_quantity_dropdown')
-        options = quantityDropDown.find_elements_by_tag_name('option')
+#         quantityDropDown = driver.find_element_by_id('tst_quantity_dropdown')
+#         options = quantityDropDown.find_elements_by_tag_name('option')
 
-        if any(option.get_attribute('value') == 'meer' for option in options):
-            stockAmount = getStockAmountWith999Trick(driver, options[-1])
-        else:
-            stockAmount = options[-1].get_attribute('value')
+#         if any(option.get_attribute('value') == 'meer' for option in options):
+#             stockAmount = getStockAmountWith999Trick(driver, options[-1])
+#         else:
+#             stockAmount = options[-1].get_attribute('value')
 
-        driver.close()
+#         driver.close()
 
-        # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
-        fileName = RESULTS_FOLDER + product[1] + '_result.csv'
-        trackedOn = datetime.now()
+#         # add the row to a new csv file with name '{PRODUCT_ID}_tracking.csv'
+#         fileName = RESULTS_FOLDER + product[1] + '_result.csv'
+#         trackedOn = datetime.now()
 
-        if(not path.exists(fileName)):
-            with open(fileName, 'w') as f:
-                f.write('Date, Time, Seller Id, Price, Stock Amount \n')
+#         if(not path.exists(fileName)):
+#             with open(fileName, 'w') as f:
+#                 f.write('Date, Time, Seller Id, Price, Stock Amount \n')
 
-        with open(fileName, 'a') as f:
-            f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
-                    ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
+#         with open(fileName, 'a') as f:
+#             f.write(trackedOn.strftime("%d/%m/%Y, %H:%M:%S") +
+#                     ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
 
-        # add the row to the db
-        conn = create_connection(Constants.DB_PATH)
-        create_productSnapshot(
-            conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
-    except:
-        return handleException(driver, product, sellerId, sellerName)
+#         # add the row to the db
+#         conn = create_connection(Constants.DB_PATH)
+#         create_productSnapshot(
+#             conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
+#     except:
+#         return handleException(driver, product, sellerId, sellerName)
 
 
 def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER'):
@@ -312,10 +315,10 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
         conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0))
     create_log(conn, ScraperLog(
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
-    try:
-        driver.quit()
-    except WebDriverException:
-        pass
+    # try:
+    #     driver.quit()
+    # except WebDriverException:
+    #     pass
     return
 
 
