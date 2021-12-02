@@ -6,5 +6,5 @@ from Data.db import migrate
 
 if __name__ == '__main__':
     migrate()
-    stockCrawler.run()
+    # stockCrawler.run()
     snapshotGrinder.run()
