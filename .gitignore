@@ -53,3 +53,10 @@ Data/__pycache__/productToTrack.cpython-38.pyc
 Data/__pycache__/scraperLog.cpython-38.pyc
 Grinder/__pycache__/__init__.cpython-38.pyc
 Grinder/__pycache__/DailySnapshotGrinder.cpython-38.pyc
+__pycache__/stockCrawler.cpython-39.pyc
+Constants/__pycache__/Constants.cpython-39.pyc
+Crawler/__pycache__/BolCrawler.cpython-38.pyc
+Crawler/__pycache__/BolCrawler.cpython-39.pyc
+Data/__pycache__/db.cpython-39.pyc
+Data/__pycache__/productSnapshot.cpython-39.pyc
+Data/__pycache__/productToTrack.cpython-39.pyc
