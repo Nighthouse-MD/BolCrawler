@@ -31,4 +31,6 @@ TODO:
 
 - use monitoror as monitor instead of app insights
 
+- round revenue to 2 decimals in api
+
 !!!! find succesful sellers with big numbers, contact them
