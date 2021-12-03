@@ -14,3 +14,21 @@ This info can also be used to target advertising more efficiently.
 SellersToTrack table
 Once a day, check their overview page for new products and add these to the list of products to track.
 Ability to stop tracking a seller, see the last check date.
+
+
+TODO:
+- split up db's
+    -> one for snapshots only
+    -> one for productsToTrack and dailyParses
+
+- refactor stats api: one object per ean with collections of stat rows: per day, per week, per month, total
+
+- improve crawler: put all seller products for one ean in basket, go to basket, do 999 trick on all items -> this does the trick for all sellers of a product in 2 requests
+
+- track seller api, get all products of one seller and add them to productsToTrack
+
+- stats api: get all product stats for one seller and add them to productsToTrack
+
+- use monitoror as monitor instead of app insights
+
+!!!! find succesful sellers with big numbers, contact them
