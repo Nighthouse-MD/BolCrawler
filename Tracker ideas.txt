@@ -33,4 +33,14 @@ TODO:
 
 - round revenue to 2 decimals in api
 
+- add currentprice to dailyParse, even if no sales
+
+- detect when there is a big price jump for one seller, then look at all other sellers, if they are out of stock there is a clear competitive market for a highly looked after product
+
+- when the ALL SELLERS average price goes down gradually, there might be a trend that the market for this product is becoming saturated
+
+DONE - add apiuser table: id, name, date, application
+
+- cache stats, cache productsToTrack
+
 !!!! find succesful sellers with big numbers, contact them

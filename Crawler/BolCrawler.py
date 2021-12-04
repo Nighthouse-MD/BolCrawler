@@ -8,9 +8,9 @@ import os
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from datetime import datetime
-from Data.productSnapshot import create_productSnapshot
+from Data.trackerDB.productSnapshot import create_productSnapshot
 from Data.db import create_connection
-from Data.scraperLog import ScraperLog, create_log
+from Data.trackerDB.scraperLog import ScraperLog, create_log
 from Constants import Constants
 
 
@@ -167,7 +167,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             trackedOn = datetime.now()
 
             # add the row to the db
-            conn = create_connection(Constants.DB_PATH)
+            conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
             create_productSnapshot(
                 conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
 
@@ -286,7 +286,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
 #                     ', ' + sellerId + ', ' + priceOfOne + ', ' + stockAmount + '\n')
 
 #         # add the row to the db
-#         conn = create_connection(Constants.DB_PATH)
+#         conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 #         create_productSnapshot(
 #             conn, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
 #     except:
@@ -310,7 +310,7 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
     print("Exception message : %s" % ex_value)
     print("Stack trace : %s" % stack_trace)
 
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     create_productSnapshot(
         conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0))
     create_log(conn, ScraperLog(

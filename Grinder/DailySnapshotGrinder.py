@@ -1,7 +1,7 @@
 from datetime import date, timedelta
-from Data.dailyParse import DailyParse, create_dailyParse, delete_dailyParse_byProductToTrackId, delete_dailyParse_byProductToTrackId_fromDate
-from Data.productSnapshot import list_all_by_productId, list_all_by_productId_from_date
-from Data.productToTrack import inactivate_productToTrack
+from Data.trackerDB.dailyParse import DailyParse, create_dailyParse, delete_dailyParse_byProductToTrackId, delete_dailyParse_byProductToTrackId_fromDate
+from Data.trackerDB.productSnapshot import list_all_by_productId, list_all_by_productId_from_date
+from Data.trackerDB.productToTrack import inactivate_productToTrack
 from Data.db import create_connection
 from Constants import Constants
 import itertools
@@ -10,7 +10,7 @@ from operator import itemgetter
 
 
 def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
     if(parseAllDays):
         snapshots = list_all_by_productId(conn, productToTrackId)
@@ -78,7 +78,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
             dailyParse.currentStock = sellerSnapshotsOnOneDay[totalAmountOfSnapshots - 1][5]
             dailyParses.append(dailyParse)
 
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
     for dailyParse in dailyParses:
         create_dailyParse(conn, dailyParse)
@@ -104,7 +104,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
 
         dailyParsesAllSellers.append(dailyParseAllSellers)
 
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     for dailyParseAllSellers in dailyParsesAllSellers:
         create_dailyParse(conn, dailyParseAllSellers)
 

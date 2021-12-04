@@ -2,7 +2,7 @@
 # from Data import db
 
 from Crawler.BolCrawler import handlerCrawlForOneProductAllSellers
-from Data.productToTrack import list_all
+from Data.trackerDB.productToTrack import list_all
 from Data.db import create_connection
 from Constants import Constants
 import random
@@ -18,7 +18,7 @@ def getProfile():
 
 
 def run():
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     productsToTrack = list_all(conn)
     random.shuffle(productsToTrack)
 

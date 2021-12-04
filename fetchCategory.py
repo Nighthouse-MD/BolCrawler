@@ -1,5 +1,5 @@
 from Data.db import create_connection
-from Data.productToTrack import create_productToTrack
+from Data.trackerDB.productToTrack import create_productToTrack
 from Constants import Constants
 from datetime import datetime
 import requests
@@ -16,7 +16,7 @@ def fetchCategoryTopProducts(categoryId):
     products = resp.json()['products']
     fetchedOn = datetime.now()
 
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
     for product in products:
         create_productToTrack(

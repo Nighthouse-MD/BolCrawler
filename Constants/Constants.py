@@ -4,7 +4,9 @@ RESULTS_FOLDER = 'C:\\boltracker\\csv results\\'
 
 GECKODRIVER_PATH = 'geckodriver.exe'
 
-DB_PATH = 'C:\\boltracker\\db\\boltrackerDB.db'
+BOLDER_TRACKER_DB_PATH = 'C:\\boltracker\\db\\boltrackerDB.db'
+
+BOLDER_API_DB_PATH = 'C:\\boltracker\\db\\bolderApiDB.db'
 
 GECKODRIVER_PATH = r'geckodriver.exe'
 

@@ -1,9 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 from Constants import Constants
-from .productToTrack import create_productToTrack
 from datetime import datetime
-from Data.productToTrack import list_all, updateEan_productToTrack
+from Data.trackerDB.productToTrack import list_all, updateEan_productToTrack
 import requests
 
 
@@ -62,7 +61,7 @@ def isEanMissing(product):
 
 
 def checkForMissingEans():
-    conn = create_connection(Constants.DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     trackedProducts = list_all(conn)
     productsWithMissingEan = list(filter(isEanMissing, trackedProducts))
 
@@ -82,7 +81,7 @@ def checkForMissingEans():
             print(e)
 
 
-def migrate():
+def migrateTrackerDB():
     sql_create_productToTrack_table = """ CREATE TABLE IF NOT EXISTS productToTrack (
                                         id integer PRIMARY KEY,
                                         productId text NOT NULL,
@@ -172,8 +171,8 @@ def migrate():
                                     """
 
     # create a database connection
-    create_db(Constants.DB_PATH)
-    conn = create_connection(Constants.DB_PATH)
+    create_db(Constants.BOLDER_TRACKER_DB_PATH)
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
     # create tables
     if conn is not None:
@@ -192,6 +191,38 @@ def migrate():
             alter_table(conn, sql_alter_productToTrack_table_add_ean)
             alter_table(conn, sql_alter_dailyParse_table_add_ean)
             alter_table(conn, sql_alter_dailyParse_table_add_type)
+        except Error as e:
+            print(e)
+    else:
+        print("Error! cannot create the database connection.")
+
+
+def migrateApiDB():
+    sql_create_apiUser_table = """ CREATE TABLE IF NOT EXISTS apiUser (
+                                        id text PRIMARY KEY,
+                                        name text NOT NULL,
+                                        createdOn DATETIME,
+                                        clientApplication text NOT NULL,
+                                        inactive bool
+                                    ); """
+
+    sql_create_request_table = """ CREATE TABLE IF NOT EXISTS request (
+                                        id integer PRIMARY KEY,
+                                        apiUserId text NOT NULL,
+                                        url text NOT NULL,
+                                        body text NOT NULL,
+                                        requestedOn DATETIME
+                                    ); """
+
+    # create a database connection
+    create_db(Constants.BOLDER_API_DB_PATH)
+    conn = create_connection(Constants.BOLDER_API_DB_PATH)
+
+    # create tables
+    if conn is not None:
+        try:
+            create_table(conn, sql_create_apiUser_table)
+            create_table(conn, sql_create_request_table)
         except Error as e:
             print(e)
     else:
