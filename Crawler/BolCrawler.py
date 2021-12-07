@@ -125,7 +125,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             # get price and sellerId
             try:
                 priceOfOne = driver.find_element_by_id(
-                    'tst_product_price').text.replace(',', '.').strip('€ ')
+                    'tst_product_price').text.replace('.', '').replace(',', '.').strip('€ ')
             except:
                 return handleException(driver, product, 'PRICE ERROR', 'PRICE ERROR')
 

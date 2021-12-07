@@ -170,6 +170,12 @@ def migrateTrackerDB():
                                         ADD COLUMN type text
                                     """
 
+    # sql_create_productToTrack_apiUser_table = """ CREATE TABLE IF NOT EXISTS productToTrack_apiUser (
+    #                                     productToTrackId integer PRIMARY KEY,
+    #                                     apiUserId integer PRIMARY KEY,
+    #                                     createdOn DATETIME NOT NULL
+    #                                 ); """
+
     # create a database connection
     create_db(Constants.BOLDER_TRACKER_DB_PATH)
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
@@ -191,6 +197,7 @@ def migrateTrackerDB():
             alter_table(conn, sql_alter_productToTrack_table_add_ean)
             alter_table(conn, sql_alter_dailyParse_table_add_ean)
             alter_table(conn, sql_alter_dailyParse_table_add_type)
+            # create_table(conn, sql_create_productToTrack_apiUser_table)
         except Error as e:
             print(e)
     else:
