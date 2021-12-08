@@ -22,7 +22,6 @@ def findElementByXPathUntilFound(driver, xpath):
         except:
             count = count + 1
             time.sleep(0.1)
-            pass
     return result
 
 
@@ -47,7 +46,6 @@ def findElementByClassNameUntilFound(driver, className):
         except:
             count = count + 1
             time.sleep(0.1)
-            pass
     return result
 
 
@@ -72,7 +70,6 @@ def findElementByIdUntilFound(driver, id):
         except:
             count = count + 1
             time.sleep(0.1)
-            pass
     return result
 
 
@@ -97,7 +94,6 @@ def findElementByTagNameUntilFound(driver, tagName):
         except:
             count = count + 1
             time.sleep(0.1)
-            pass
     return result
 
 
