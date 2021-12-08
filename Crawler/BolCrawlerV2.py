@@ -55,6 +55,8 @@ def getStockAmountWith999Trick(driver, elementIndex, elementToScrape, lastOption
 
 
 def getDriverBE():
+    success = False
+
     while not success:
         try:
             GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
@@ -65,8 +67,6 @@ def getDriverBE():
                                        firefox_options=options)
 
             driver.get('https://bol.com')
-
-            success = False
 
             # handle modals
             firstModalAcceptButtonElements = findElementsByXPathUntilFound(driver,
