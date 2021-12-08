@@ -6,7 +6,7 @@ import os.path
 from os import path
 import os
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 from Data.trackerDB.productSnapshot import create_productSnapshot, create_productSnapshots
@@ -73,19 +73,33 @@ def getDriverBE():
     if(len(secondModalCloseButtonElements) > 0):
         secondModalCloseButtonElements[0].click()
 
-    findElementByXPathUntilFound(driver,
-                                 '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click()
+    try:
+        catchOverlayError(driver, findElementByXPathUntilFound(
+            driver, '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click)
 
-    findElementByXPathUntilFound(
-        driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[1]/p[1]/label/span').click()
+        catchOverlayError(driver, findElementByXPathUntilFound(
+            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[1]/p[1]/label/span').click)
 
-    findElementByXPathUntilFound(driver,
-                                 '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[3]/p[2]/label/span').click()
+        catchOverlayError(driver, findElementByXPathUntilFound(
+            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[3]/p[2]/label/span').click)
 
-    findElementByXPathUntilFound(driver,
-                                 '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/button').click()
+        catchOverlayError(driver, findElementByXPathUntilFound(
+            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/button').click)
+
+    except ElementClickInterceptedException as e:
+        findElementByClassNameUntilFound(driver, 'modal__overlay').click()
 
     return driver
+
+
+def catchOverlayError(driver, fnToExecute):
+    success = False
+    while not success:
+        try:
+            fnToExecute()
+            success = True
+        except ElementClickInterceptedException as e:
+            findElementByClassNameUntilFound(driver, 'modal__overlay').click()
 
 
 def handlerCrawlForOneProductAllSellers(driver, product):
