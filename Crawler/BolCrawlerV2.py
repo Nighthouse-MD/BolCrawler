@@ -213,10 +213,9 @@ def handlerCrawlForOneProductAllSellers(driver, product):
         amountOfInWinkelwagenLinks = len(inWinkelwagenLinks)
 
         for j in range(amountOfInWinkelwagenLinks):
-            # time.sleep(0.1)
             successBuyClick = False
             count = 0
-            while successBuyClick is False and count < 10:
+            while successBuyClick is False and count < 4:
                 # connect
                 try:
                     inWinkelwagenLinks[j].click()
@@ -228,7 +227,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             time.sleep(0.3)
             successModalClick = False
             count = 0
-            while successModalClick is False and count < 10:
+            while successModalClick is False and count < 4:
                 # connect
                 try:
                     findElementByXPathUntilFound(
@@ -237,8 +236,6 @@ def handlerCrawlForOneProductAllSellers(driver, product):
                 except Exception as e:
                     count = count + 1
                     time.sleep(0.1)
-
-        # time.sleep(0.5)
 
         # go to cart
         driver.get('https://www.bol.com/nl/order/basket.html')
@@ -307,8 +304,6 @@ def handlerCrawlForOneProductAllSellers(driver, product):
 
             productSnapshots.append(
                 (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
-
-            time.sleep(0.2)
 
         # clear shopping cart
         removeButtons = findElementsByIdUntilFound(
