@@ -55,19 +55,19 @@ def getStockAmountWith999Trick(driver, elementIndex, elementToScrape, lastOption
 
 
 def getDriverBE():
-    GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
-    options = Options()
-    options.add_argument('-headless')
-    driver = webdriver.Firefox(firefox_profile=getProfile(),
-                               executable_path=GECKODRIVER_PATH,
-                               firefox_options=options)
-
-    driver.get('https://bol.com')
-
-    success = False
-
     while not success:
         try:
+            GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+            options = Options()
+            options.add_argument('-headless')
+            driver = webdriver.Firefox(firefox_profile=getProfile(),
+                                       executable_path=GECKODRIVER_PATH,
+                                       firefox_options=options)
+
+            driver.get('https://bol.com')
+
+            success = False
+
             # handle modals
             firstModalAcceptButtonElements = findElementsByXPathUntilFound(driver,
                                                                            '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
@@ -95,8 +95,7 @@ def getDriverBE():
             success = True
 
         except Exception as e:
-            driver.refresh()
-            time.sleep(3)
+            driver.close()
 
     return driver
 
