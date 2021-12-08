@@ -50,7 +50,6 @@ def findElementByXPathUntilFound(driver, xpath):
         except:
             count = count + 1
             time.sleep(0.1)
-            pass
     return result
 
 
