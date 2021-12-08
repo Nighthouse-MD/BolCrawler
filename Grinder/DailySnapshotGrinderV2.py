@@ -20,7 +20,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
         snapshots = list_all_by_productId(conn, productToTrackId)
         delete_dailyParse_byProductToTrackId(conn, productToTrackId)
     else:
-        fromDate = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+        fromDate = (date.today() - timedelta(days=2)).strftime('%Y-%m-%d')
         snapshots = list_all_by_productId_from_date(
             conn, productToTrackId, fromDate)
         delete_dailyParse_byProductToTrackId_fromDate(

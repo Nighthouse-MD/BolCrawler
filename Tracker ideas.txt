@@ -23,7 +23,9 @@ TODO:
 
 - refactor stats api: one object per ean with collections of stat rows: per day, per week, per month, total
 
-- improve crawler: put all seller products for one ean in basket, go to basket, do 999 trick on all items -> this does the trick for all sellers of a product in 2 requests
+- NL/BE strategy
+
+DONE - improve crawler: put all seller products for one ean in basket, go to basket, do 999 trick on all items -> this does the trick for all sellers of a product in 2 requests
 
 - track seller api, get all products of one seller and add them to productsToTrack
 
@@ -51,7 +53,7 @@ DONE - fix price above 1000 punctuation issue
 
 - PRICING!!
 
-- group db snapshot write calls per product
+PARTIALLY DONE - group db snapshot write calls per product
 
 - inactivate items to track when REASONS: always 500 items, always 0 items,...
 

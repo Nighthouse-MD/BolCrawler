@@ -200,6 +200,11 @@ def getDriverBE():
 def handlerCrawlForOneProductAllSellers(driver, product):
     # start = time.time()
     # print("Started Timed Scrape V2")
+    sellerId = ''
+    sellerName = ''
+
+    if driver is None:
+        driver = getDriverBE()
 
     productSellersOverviewUrl = 'https://www.bol.com/be/nl/prijsoverzicht/productname/' + \
         product[1] + '/?filter=new&sortOrder=asc&sort=price'
@@ -257,7 +262,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
                 priceOfOne = findElementByIdUntilFound(elementToScrape, 'tst_product_price').text.replace(
                     '.', '').replace(',', '.').strip('€ ')
             except:
-                return handleException(driver, product, 'PRICE ERROR', 'PRICE ERROR')
+                handleException(driver, product, 'PRICE ERROR', 'PRICE ERROR')
 
         # check for non bol seller element location
             try:
@@ -351,8 +356,7 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
         conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0))
     create_log(conn, ScraperLog(
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
-    # try:
-    #     driver.quit()
-    # except WebDriverException:
-    #     pass
-    return
+    try:
+        driver.quit()
+    except WebDriverException:
+        return

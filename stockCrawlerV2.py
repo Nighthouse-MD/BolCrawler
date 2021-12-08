@@ -28,34 +28,35 @@ def run():
     productsToTrack = list_all(conn)
     random.shuffle(productsToTrack)
 
-    try:
-        driver = getDriverBE()
+    driver = getDriverBE()
 
-        for i in range(len(productsToTrack)):
+    for i in range(len(productsToTrack)):
+        try:
             handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
+        except Exception as e:
+            ex_type, ex_value, ex_traceback = sys.exc_info()
 
-        create_log(conn, ScraperLog(
-            f'TRACKER DONE', 'Info', None, None, None))
+            # Extract unformatter stack traces as tuples
+            trace_back = traceback.extract_tb(ex_traceback)
 
-    except Exception as e:
-        ex_type, ex_value, ex_traceback = sys.exc_info()
+            # Format stacktrace
+            stack_trace = list()
 
-        # Extract unformatter stack traces as tuples
-        trace_back = traceback.extract_tb(ex_traceback)
+            for trace in trace_back:
+                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
+                    trace[0], trace[1], trace[2], trace[3]))
 
-        # Format stacktrace
-        stack_trace = list()
+            print("Exception type : %s " % ex_type.__name__)
+            print("Exception message : %s" % ex_value)
+            print("Stack trace : %s" % stack_trace)
 
-        for trace in trace_back:
-            stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
-                trace[0], trace[1], trace[2], trace[3]))
+            conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+            create_log(conn, ScraperLog(
+                f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
+            driver.quit()
 
-        print("Exception type : %s " % ex_type.__name__)
-        print("Exception message : %s" % ex_value)
-        print("Stack trace : %s" % stack_trace)
+    create_log(conn, ScraperLog(
+        f'TRACKER DONE', 'Info', None, None, None))
 
-        conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-        create_log(conn, ScraperLog(
-            f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
     # testProduct = list(filter(lambda x: (x[0] == 332), productsToTrack))[0]
     # handlerCrawlForOneProductAllSellers(driver, testProduct)
