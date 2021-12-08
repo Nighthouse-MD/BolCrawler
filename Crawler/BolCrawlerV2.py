@@ -6,6 +6,7 @@ import os.path
 from os import path
 import os
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import WebDriverException, NoSuchElementException, ElementClickInterceptedException
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
@@ -55,39 +56,47 @@ def getStockAmountWith999Trick(driver, elementIndex, elementToScrape, lastOption
 
 def getDriverBE():
     GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
+    options = Options()
+    options.add_argument('-headless')
     driver = webdriver.Firefox(firefox_profile=getProfile(),
-                               executable_path=GECKODRIVER_PATH)
+                               executable_path=GECKODRIVER_PATH,
+                               firefox_options=options)
 
     driver.get('https://bol.com')
 
-    # handle modals
-    firstModalAcceptButtonElements = findElementsByXPathUntilFound(driver,
-                                                                   '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+    success = False
 
-    if(len(firstModalAcceptButtonElements) > 0):
-        firstModalAcceptButtonElements[0].click()
+    while not success:
+        try:
+            # handle modals
+            firstModalAcceptButtonElements = findElementsByXPathUntilFound(driver,
+                                                                           '/html/body/wsp-modal-window[1]/div[2]/div[2]/wsp-consent-modal/div[2]/button[1]')
+            if(len(firstModalAcceptButtonElements) > 0):
+                firstModalAcceptButtonElements[0].click()
 
-    secondModalCloseButtonElements = findElementsByXPathUntilFound(driver,
-                                                                   '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button', 2)
+            secondModalCloseButtonElements = findElementsByXPathUntilFound(driver,
+                                                                           '/html/body/wsp-modal-window/div[2]/div[2]/wsp-country-language-modal/button', 2)
 
-    if(len(secondModalCloseButtonElements) > 0):
-        secondModalCloseButtonElements[0].click()
+            if(len(secondModalCloseButtonElements) > 0):
+                secondModalCloseButtonElements[0].click()
 
-    try:
-        catchOverlayError(driver, findElementByXPathUntilFound(
-            driver, '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click)
+            catchOverlayError(driver, findElementByXPathUntilFound(
+                driver, '/html/body/div/header/wsp-main-nav-offcanvas/div[2]/div/div/nav[1]/ul[2]/li[5]/wsp-country-language-selector/a').click)
 
-        catchOverlayError(driver, findElementByXPathUntilFound(
-            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[1]/p[1]/label/span').click)
+            catchOverlayError(driver, findElementByXPathUntilFound(
+                driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[1]/p[1]/label/span').click)
 
-        catchOverlayError(driver, findElementByXPathUntilFound(
-            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[3]/p[2]/label/span').click)
+            catchOverlayError(driver, findElementByXPathUntilFound(
+                driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/div[3]/p[2]/label/span').click)
 
-        catchOverlayError(driver, findElementByXPathUntilFound(
-            driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/button').click)
+            catchOverlayError(driver, findElementByXPathUntilFound(
+                driver, '//*[@id="modalWindow"]/div[2]/div[2]/wsp-country-language-modal/button').click)
 
-    except ElementClickInterceptedException as e:
-        findElementByClassNameUntilFound(driver, 'modal__overlay').click()
+            success = True
+
+        except Exception as e:
+            driver.refresh()
+            time.sleep(3)
 
     return driver
 
