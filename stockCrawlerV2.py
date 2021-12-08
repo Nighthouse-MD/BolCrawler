@@ -8,6 +8,7 @@ from Constants import Constants
 import random
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+import os
 
 import sys
 import traceback
@@ -41,6 +42,7 @@ def run():
     for batch in batchedProducts:
         if(driver is not None):
             driver.close()
+            os.system("taskkill /f /im geckodriver.exe /T")
             driver = getDriverBE()
 
         for i in range(len(batch)):
