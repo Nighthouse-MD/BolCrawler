@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from datetime import date, timedelta
 
 def list_all(conn):
     """
@@ -14,6 +14,19 @@ def list_all(conn):
     rows = cur.fetchall()
     return rows
 
+def list_all_untracked_productIds_today(conn):
+    cur = conn.cursor()
+    conn.row_factory = lambda cursor, row: row[0]
+    cur.execute("""SELECT id
+                FROM productToTrack
+                where inactive is null
+                and id not in (SELECT distinct producttotrackid
+                FROM productSnapshot
+                where trackedOn > '""" + (date.today()).strftime('%Y-%m-%d') + """')""")
+    rows = cur.fetchall()
+    rows = list(map(lambda x: x[0], rows))
+    return rows   
+    
 
 def inactivate_productToTrack(conn, productId, reason="manually inactivated"):
     cur = conn.cursor()

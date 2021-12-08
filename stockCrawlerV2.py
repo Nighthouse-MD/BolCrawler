@@ -2,7 +2,7 @@
 # from Data import db
 
 from Crawler.BolCrawlerV2 import handlerCrawlForOneProductAllSellers, getDriverBE
-from Data.trackerDB.productToTrack import list_all
+from Data.trackerDB.productToTrack import list_all, list_all_untracked_productIds_today
 from Data.db import create_connection
 from Constants import Constants
 import random
@@ -33,8 +33,26 @@ def run():
     create_log(conn, ScraperLog(
         f'TRACKER START', 'Info', None, None, None))
     productsToTrack = list_all(conn)
-    random.shuffle(productsToTrack)
+    productIdsToTrackfirst = list_all_untracked_productIds_today(conn)
 
+    productsToTrackFirst = []
+    productsToTrackSecond = []
+
+    for productToTrack in productsToTrack:
+        if productToTrack[0] in productIdsToTrackfirst:
+            productsToTrackFirst.append(productToTrack)
+        else:
+            productsToTrackSecond.append(productToTrack)
+    
+    trackProductList(productsToTrackFirst)
+    trackProductList(productsToTrackSecond)
+    
+    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+    create_log(conn, ScraperLog(
+        f'TRACKER DONE', 'Info', None, None, None))
+    
+def trackProductList(productsToTrack):
+    random.shuffle(productsToTrack)
     batchedProducts = list(batchList(productsToTrack, 10))
     driver = None
 
@@ -45,9 +63,16 @@ def run():
 
         driver = getDriverBE()
 
+        if not driver:
+            conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+            create_log(conn, ScraperLog('IP BLOCKED', 'Error', None, None, None))
+            return
+
         for product in batch:
             try:
-                handlerCrawlForOneProductAllSellers(driver, product)
+                result = handlerCrawlForOneProductAllSellers(driver, product)
+                if result == False:
+                    return
             except Exception as e:
                 ex_type, ex_value, ex_traceback = sys.exc_info()
 
@@ -69,9 +94,6 @@ def run():
                 create_log(conn, ScraperLog(
                     f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
                 driver.quit()
-
-    create_log(conn, ScraperLog(
-        f'TRACKER DONE', 'Info', None, None, None))
 
     # testProduct = list(filter(lambda x: (x[0] == 332), productsToTrack))[0]
     # handlerCrawlForOneProductAllSellers(driver, testProduct)
