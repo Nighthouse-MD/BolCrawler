@@ -228,8 +228,8 @@ def handlerCrawlForOneProductAllSellers(driver, product):
                 except Exception as e:
                     count = count + 1
                     time.sleep(0.1)
-
             time.sleep(0.3)
+
             successModalClick = False
             count = 0
             while successModalClick is False and count < 4:
@@ -241,6 +241,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
                 except Exception as e:
                     count = count + 1
                     time.sleep(0.1)
+            time.sleep(0.3)
 
         # go to cart
         driver.get('https://www.bol.com/nl/order/basket.html')
@@ -357,6 +358,6 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
     create_log(conn, ScraperLog(
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
     try:
-        driver.quit()
-    except WebDriverException:
+        driver.close()
+    except Exception as e:
         return

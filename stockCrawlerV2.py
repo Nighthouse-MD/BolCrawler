@@ -35,19 +35,19 @@ def run():
     productsToTrack = list_all(conn)
     random.shuffle(productsToTrack)
 
-    driver = getDriverBE()
-
     batchedProducts = list(batchList(productsToTrack, 10))
+    driver = None
 
     for batch in batchedProducts:
         if(driver is not None):
             driver.close()
             os.system("taskkill /f /im geckodriver.exe /T")
-            driver = getDriverBE()
 
-        for i in range(len(batch)):
+        driver = getDriverBE()
+
+        for product in batch:
             try:
-                handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
+                handlerCrawlForOneProductAllSellers(driver, product)
             except Exception as e:
                 ex_type, ex_value, ex_traceback = sys.exc_info()
 
