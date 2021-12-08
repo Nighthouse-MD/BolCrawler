@@ -14,6 +14,12 @@ import traceback
 from Data.trackerDB.scraperLog import ScraperLog, create_log
 
 
+def batchList(iterable, n=1):
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]
+
+
 def getProfile():
     profile = webdriver.FirefoxProfile()
     profile.set_preference('intl.accept_languages', 'en-GB')
@@ -30,30 +36,37 @@ def run():
 
     driver = getDriverBE()
 
-    for i in range(len(productsToTrack)):
-        try:
-            handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
-        except Exception as e:
-            ex_type, ex_value, ex_traceback = sys.exc_info()
+    batchedProducts = list(batchList(productsToTrack, 10))
 
-            # Extract unformatter stack traces as tuples
-            trace_back = traceback.extract_tb(ex_traceback)
+    for batch in batchedProducts:
+        if(driver is not None):
+            driver.close()
+            driver = getDriverBE()
 
-            # Format stacktrace
-            stack_trace = list()
+        for i in range(len(batch)):
+            try:
+                handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
+            except Exception as e:
+                ex_type, ex_value, ex_traceback = sys.exc_info()
 
-            for trace in trace_back:
-                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
-                    trace[0], trace[1], trace[2], trace[3]))
+                # Extract unformatter stack traces as tuples
+                trace_back = traceback.extract_tb(ex_traceback)
 
-            print("Exception type : %s " % ex_type.__name__)
-            print("Exception message : %s" % ex_value)
-            print("Stack trace : %s" % stack_trace)
+                # Format stacktrace
+                stack_trace = list()
 
-            conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-            create_log(conn, ScraperLog(
-                f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
-            driver.quit()
+                for trace in trace_back:
+                    stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (
+                        trace[0], trace[1], trace[2], trace[3]))
+
+                print("Exception type : %s " % ex_type.__name__)
+                print("Exception message : %s" % ex_value)
+                print("Stack trace : %s" % stack_trace)
+
+                conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+                create_log(conn, ScraperLog(
+                    f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
+                driver.quit()
 
     create_log(conn, ScraperLog(
         f'TRACKER DONE', 'Info', None, None, None))
