@@ -23,6 +23,8 @@ def getProfile():
 
 def run():
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+    create_log(conn, ScraperLog(
+        f'TRACKER START', 'Info', None, None, None))
     productsToTrack = list_all(conn)
     random.shuffle(productsToTrack)
 
@@ -31,6 +33,9 @@ def run():
 
         for i in range(len(productsToTrack)):
             handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
+
+        create_log(conn, ScraperLog(
+            f'TRACKER DONE', 'Info', None, None, None))
 
     except Exception as e:
         ex_type, ex_value, ex_traceback = sys.exc_info()
