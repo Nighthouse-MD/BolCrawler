@@ -24,6 +24,11 @@ def list_all_by_productId_from_date(conn, productId, fromDay):
     return rows
 
 
+def create_productSnapshots(conn, productSnapshots):
+    for i in range(len(productSnapshots)):
+        create_productSnapshot(conn, productSnapshots[i])
+
+
 def create_productSnapshot(conn, productSnapshot):
     """
     Create a new productSnapshot into the productSnapshot table

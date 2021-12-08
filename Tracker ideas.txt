@@ -43,4 +43,16 @@ DONE - add apiuser table: id, name, date, application
 
 - cache stats, cache productsToTrack
 
+- add totalUntilNow stat record per item per seller
+
+- add amountOfSnapshots per calculated stat record
+
+DONE - fix price above 1000 punctuation issue
+
+- PRICING!!
+
+- group db snapshot write calls per product
+
+- inactivate items to track when REASONS: always 500 items, always 0 items,...
+
 !!!! find succesful sellers with big numbers, contact them

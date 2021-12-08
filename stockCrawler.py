@@ -27,5 +27,9 @@ def run():
     driver = webdriver.Firefox(firefox_profile=getProfile(),
                                executable_path=GECKODRIVER_PATH)
 
+    # testProduct = list(filter(lambda x: (x[0] == 332), productsToTrack))[0]
     for i in range(len(productsToTrack)):
         handlerCrawlForOneProductAllSellers(driver, productsToTrack[i])
+
+    # testProduct = list(filter(lambda x: (x[0] == 332), productsToTrack))[0]
+    # handlerCrawlForOneProductAllSellers(driver, testProduct)
