@@ -59,4 +59,6 @@ PARTIALLY DONE - group db snapshot write calls per product
 
 - seller page look at other pages when more the 10 sellers
 
+- inform when product is inactivated through api + give reason
+
 !!!! find succesful sellers with big numbers, contact them

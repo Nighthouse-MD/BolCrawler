@@ -15,10 +15,10 @@ def list_all(conn):
     return rows
 
 
-def inactivate_productToTrack(conn, productId):
+def inactivate_productToTrack(conn, productId, reason="manually inactivated"):
     cur = conn.cursor()
     cur.execute(
-        '''UPDATE productToTrack SET inactive = 1, inactivatedOn = ? WHERE id = ?''', (datetime.now(), productId))
+        '''UPDATE productToTrack SET inactive = 1, inactivatedOn = ?, reasonForInactivating = ? WHERE id = ?''', (datetime.now(), reason, productId))
     conn.commit()
 
 
