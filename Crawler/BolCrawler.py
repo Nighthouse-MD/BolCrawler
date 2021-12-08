@@ -37,6 +37,55 @@ def getProfile():
     profile = webdriver.FirefoxProfile()
     profile.set_preference('intl.accept_languages', 'en-GB')
     profile.set_preference("browser.privatebrowsing.autostart", True)
+    profile.set_preference("network.http.pipelining", True)
+    profile.set_preference("network.http.proxy.pipelining", True)
+    profile.set_preference("network.http.pipelining.maxrequests", 8)
+    profile.set_preference("content.notify.interval", 500000)
+    profile.set_preference("content.notify.ontimer", True)
+    profile.set_preference("content.switch.threshold", 250000)
+    # Increase the cache capacity.
+    profile.set_preference("browser.cache.memory.capacity", 65536)
+    profile.set_preference("browser.startup.homepage", "about:blank")
+    # Disable reader, we won't need that.
+    profile.set_preference("reader.parse-on-load.enabled", False)
+    profile.set_preference("browser.pocket.enabled", False)  # Duck pocket too!
+    profile.set_preference("loop.enabled", False)
+    # Text on Toolbar instead of icons
+    profile.set_preference("browser.chrome.toolbar_style", 1)
+    # Don't show thumbnails on not loaded images.
+    profile.set_preference("browser.display.show_image_placeholders", False)
+    # Don't show document colors.
+    profile.set_preference("browser.display.use_document_colors", False)
+    # Don't load document fonts.
+    profile.set_preference("browser.display.use_document_fonts", 0)
+    # Use system colors.
+    profile.set_preference("browser.display.use_system_colors", True)
+    # Autofill on forms disabled.
+    profile.set_preference("browser.formfill.enable", False)
+    # Delete temprorary files.
+    profile.set_preference("browser.helperApps.deleteTempFileOnExit", True)
+    profile.set_preference("browser.shell.checkDefaultBrowser", False)
+    profile.set_preference("browser.startup.homepage", "about:blank")
+    profile.set_preference("browser.startup.page", 0)  # blank
+    # Disable tabs, We won't need that.
+    profile.set_preference("browser.tabs.forceHide", True)
+    # Disable autofill on URL bar.
+    profile.set_preference("browser.urlbar.autoFill", False)
+    # Disable autocomplete on URL bar.
+    profile.set_preference("browser.urlbar.autocomplete.enabled", False)
+    # Disable list of URLs when typing on URL bar.
+    profile.set_preference("browser.urlbar.showPopup", False)
+    # Disable search bar.
+    profile.set_preference("browser.urlbar.showSearch", False)
+    profile.set_preference("extensions.checkCompatibility",
+                           False)  # Addon update disabled
+    profile.set_preference("extensions.checkUpdateSecurity", False)
+    profile.set_preference("extensions.update.autoUpdateEnabled", False)
+    profile.set_preference("extensions.update.enabled", False)
+    profile.set_preference("general.startup.browser", False)
+    profile.set_preference("plugin.default_plugin_disabled", False)
+    profile.set_preference("permissions.default.image",
+                           2)  # Image load disabled again
     return profile
 
 
