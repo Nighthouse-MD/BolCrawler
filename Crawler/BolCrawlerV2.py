@@ -36,10 +36,10 @@ def getStockAmountWith999Trick(driver, elementIndex, elementToScrape, lastOption
         elementToScrape, 'js_quantity_overlay_input')
 
     amountInput.send_keys('999')
-    amountInfputConfirmButton = findElementByClassNameUntilFound(
+    amountInputConfirmButton = findElementByClassNameUntilFound(
         elementToScrape, 'js_quantity_overlay_ok')
 
-    amountInfputConfirmButton.click()
+    amountInputConfirmButton.click()
     # !! causes a refresh
 
     refreshedShoppingCartElements = findElementsByClassNameUntilFound(
@@ -135,7 +135,14 @@ def handlerCrawlForOneProductAllSellers(driver, product):
     goToProductSellerOverview(driver, product[1])
 
     try:
+
         elementsFound = putAllInWinkelWagen(driver)
+        nextSellerPage = getNextSellerPageButton(driver)
+        while nextSellerPage is not None:
+            nextSellerPage.click()
+            time.sleep(0.5)
+            nextSellerPage = getNextSellerPageButton(driver)
+            elementsFound = putAllInWinkelWagen(driver)
 
         if not elementsFound:
             conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
@@ -161,6 +168,17 @@ def handlerCrawlForOneProductAllSellers(driver, product):
 
     # end = time.time()
     # print("Ended Timed Scrape V2 with time: " + str(end - start))
+
+
+def getNextSellerPageButton(driver):
+    nextPageButton = None
+    try:
+        nextPageButton = driver.find_element_by_xpath(
+            '//*[@id="mainContent"]/div[5]/ul/li[3]/a')
+    except Exception as e:
+        nextPageButton = None
+
+    return nextPageButton
 
 
 def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER'):
