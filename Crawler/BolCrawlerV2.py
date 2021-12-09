@@ -64,12 +64,13 @@ def getDriverBE():
             options.add_argument('-headless')
             driver = webdriver.Firefox(firefox_profile=getProfile(),
                                        executable_path=GECKODRIVER_PATH)
-                                    #    firefox_options=options)
+            #    firefox_options=options)
 
             driver.get('https://bol.com')
 
             try:
-                ipBlockedNotification = driver.find_element_by_xpath('/html/body/div[2]/div/div/div/h1')
+                ipBlockedNotification = driver.find_element_by_xpath(
+                    '/html/body/div[2]/div/div/div/h1')
                 success = True
                 return False
             except:
@@ -127,7 +128,8 @@ def handlerCrawlForOneProductAllSellers(driver, product):
         driver = getDriverBE()
         if not driver:
             conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-            create_log(conn, ScraperLog('IP BLOCKED', 'Error', None, None, None))
+            create_log(conn, ScraperLog(
+                'IP BLOCKED', 'Error', None, None, None))
             return
 
     goToProductSellerOverview(driver, product[1])
@@ -140,7 +142,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             inactivate_productToTrack(conn, product[0], "No sellers found")
             return
 
-        time.sleep(3) #avoid ip blocking
+        time.sleep(2.6)  # avoid ip blocking
         goToCart(driver)
 
         shoppingCartElements = getShoppingCartElements(driver)

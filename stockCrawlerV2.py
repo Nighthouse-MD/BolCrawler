@@ -43,14 +43,15 @@ def run():
             productsToTrackFirst.append(productToTrack)
         else:
             productsToTrackSecond.append(productToTrack)
-    
+
     trackProductList(productsToTrackFirst)
     trackProductList(productsToTrackSecond)
-    
+
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     create_log(conn, ScraperLog(
         f'TRACKER DONE', 'Info', None, None, None))
-    
+
+
 def trackProductList(productsToTrack):
     random.shuffle(productsToTrack)
     batchedProducts = list(batchList(productsToTrack, 10))
@@ -60,12 +61,14 @@ def trackProductList(productsToTrack):
         if(driver is not None):
             driver.close()
             os.system("taskkill /f /im geckodriver.exe /T")
+            os.system("taskkill /IM firefox.exe /F")
 
         driver = getDriverBE()
 
         if not driver:
             conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-            create_log(conn, ScraperLog('IP BLOCKED', 'Error', None, None, None))
+            create_log(conn, ScraperLog(
+                'IP BLOCKED', 'Error', None, None, None))
             return
 
         for product in batch:
