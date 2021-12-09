@@ -50,6 +50,8 @@ def run():
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     create_log(conn, ScraperLog(
         f'TRACKER DONE', 'Info', None, None, None))
+    os.system("taskkill /f /im geckodriver.exe /T")
+    os.system("taskkill /IM firefox.exe /F")
 
 
 def trackProductList(productsToTrack):
