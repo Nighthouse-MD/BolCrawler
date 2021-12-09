@@ -57,14 +57,17 @@ def getStockAmountWith999Trick(driver, elementIndex, elementToScrape, lastOption
 def getDriverBE():
     success = False
 
+    os.system("taskkill /f /im geckodriver.exe /T")
+    os.system("taskkill /IM firefox.exe /F")
+
     while not success:
         try:
             GECKODRIVER_PATH = Constants.GECKODRIVER_PATH
             options = Options()
             options.add_argument('-headless')
             driver = webdriver.Firefox(firefox_profile=getProfile(),
-                                       executable_path=GECKODRIVER_PATH)
-            #    firefox_options=options)
+                                       executable_path=GECKODRIVER_PATH,
+                                       firefox_options=options)
 
             driver.get('https://bol.com')
 
@@ -149,7 +152,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             inactivate_productToTrack(conn, product[0], "No sellers found")
             return
 
-        time.sleep(2.6)  # avoid ip blocking
+        time.sleep(3)  # avoid ip blocking
         goToCart(driver)
 
         shoppingCartElements = getShoppingCartElements(driver)

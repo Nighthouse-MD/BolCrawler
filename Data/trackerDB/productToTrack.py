@@ -22,7 +22,7 @@ def list_all_untracked_productIds_today(conn):
                 where inactive is null
                 and id not in (SELECT distinct producttotrackid
                 FROM productSnapshot
-                where trackedOn > '""" + (date.today()).strftime('%Y-%m-%d') + """')""")
+                where trackedOn > '""" + str(datetime.now()- timedelta(hours=12)) + """')""")
     rows = cur.fetchall()
     rows = list(map(lambda x: x[0], rows))
     return rows   
