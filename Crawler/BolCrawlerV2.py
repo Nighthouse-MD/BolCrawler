@@ -136,6 +136,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             return
 
     goToProductSellerOverview(driver, product[1])
+    time.sleep(0.8)
 
     try:
 
@@ -152,7 +153,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             inactivate_productToTrack(conn, product[0], "No sellers found")
             return
 
-        time.sleep(3)  # avoid ip blocking
+        time.sleep(2.2)  # avoid ip blocking
         goToCart(driver)
 
         shoppingCartElements = getShoppingCartElements(driver)

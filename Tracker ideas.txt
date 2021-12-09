@@ -57,7 +57,7 @@ PARTIALLY DONE - group db snapshot write calls per product
 
 - inactivate items to track when REASONS: always 500 items, always 0 items,...
 
-- seller page look at other pages when more the 10 sellers
+DONE - seller page look at other pages when more the 10 sellers
 
 - inform when product is inactivated through api + give reason
 
