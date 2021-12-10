@@ -62,6 +62,7 @@ def trackProductList(productsToTrack):
     for batch in batchedProducts:
         if(driver is not None):
             driver.close()
+            driver = None
             os.system("taskkill /f /im geckodriver.exe /T")
             os.system("taskkill /IM firefox.exe /F")
 
@@ -98,7 +99,8 @@ def trackProductList(productsToTrack):
                 conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
                 create_log(conn, ScraperLog(
                     f'FATAL ERROR', 'Error', ex_type.__name__, ex_value, stack_trace))
-                driver.quit()
+                # driver.close()
+                driver = None
 
     # testProduct = list(filter(lambda x: (x[0] == 332), productsToTrack))[0]
     # handlerCrawlForOneProductAllSellers(driver, testProduct)

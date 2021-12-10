@@ -18,6 +18,9 @@ from Constants import Constants
 from Crawler.FindElementHelpers import findElementByClassNameUntilFound, findElementsByClassNameUntilFound, findElementsByLinkTextUntilFound, findElementByIdUntilFound, findElementByTagNameUntilFound, findElementByXPathUntilFound, findElementsByIdUntilFound, findElementsByTagNameUntilFound, findElementsByXPathUntilFound
 
 import time
+import socket
+
+from selenium.webdriver.remote.command import Command
 
 
 def getProfile():
@@ -107,6 +110,7 @@ def getDriverBE():
 
         except Exception as e:
             driver.close()
+            driver = None
 
     return driver
 
@@ -209,6 +213,7 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
     try:
         driver.close()
+        driver = None
     except Exception as e:
         return
 
