@@ -39,7 +39,7 @@ def run():
     productsToTrackSecond = []
 
     for productToTrack in productsToTrack:
-        if productToTrack[0] in productIdsToTrackfirsts:
+        if productToTrack[0] in productIdsToTrackfirst:
             productsToTrackFirst.append(productToTrack)
         else:
             productsToTrackSecond.append(productToTrack)
