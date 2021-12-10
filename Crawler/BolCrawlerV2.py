@@ -181,8 +181,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
 def getNextSellerPageButton(driver):
     nextPageButton = None
     try:
-        nextPageButton = driver.find_element_by_xpath(
-            '//*[@id="mainContent"]/div[5]/ul/li[3]/a')
+        nextPageButton = driver.find_element_by_xpath("//a[@aria-label='volgende']")
     except Exception as e:
         nextPageButton = None
 
@@ -348,6 +347,6 @@ def collectSnapshots(driver, shoppingCartElements, product):
 
 
 def goToProductSellerOverview(driver, productId):
-    productSellersOverviewUrl = 'https://www.bol.com/be/nl/prijsoverzicht/productname/' + \
+    productSellersOverviewUrl = 'https://www.bol.com/nl/nl/prijsoverzicht/productname/' + \
         productId + '/?filter=new&sortOrder=asc&sort=price'
     driver.get(productSellersOverviewUrl)
