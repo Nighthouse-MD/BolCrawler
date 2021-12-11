@@ -16,15 +16,17 @@ from operator import itemgetter
 def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
+    newStats = []
+
     if(parseAllDays):
         snapshots = list_all_by_productId(conn, productToTrackId)
-        delete_dailyParse_byProductToTrackId(conn, productToTrackId)
+        # delete_dailyParse_byProductToTrackId(conn, productToTrackId)
     else:
         fromDate = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         snapshots = list_all_by_productId_from_date(
             conn, productToTrackId, fromDate)
-        delete_dailyParse_byProductToTrackId_fromDate(
-            conn, productToTrackId, fromDate)
+        # delete_dailyParse_byProductToTrackId_fromDate(
+        #     conn, productToTrackId, fromDate)
 
     listsByDay = []
     for timestamp, dailyGrp in itertools.groupby(snapshots, key=lambda x: parse(x[2]).date()):
@@ -82,10 +84,12 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
             dailyParse.currentStock = sellerSnapshotsOnOneDay[totalAmountOfSnapshots - 1][5]
             dailyParses.append(dailyParse)
 
-    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+    # conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
 
-    for dailyParse in dailyParses:
-        create_dailyParse(conn, dailyParse)
+    # for dailyParse in dailyParses:
+    #     create_dailyParse(conn, dailyParse)
+
+    newStats = newStats + dailyParses
 
     # parse and save daily all sellers to db
     dailyParsesAllSellers = []
@@ -108,9 +112,13 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
 
         dailyParsesAllSellers.append(dailyParseAllSellers)
 
-    conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-    for dailyParseAllSellers in dailyParsesAllSellers:
-        create_dailyParse(conn, dailyParseAllSellers)
+    # conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
+    # for dailyParseAllSellers in dailyParsesAllSellers:
+    #     create_dailyParse(conn, dailyParseAllSellers)
 
-    if len(snapshots) != 0 and all(x[3] == 'NO SELLER' for x in snapshots):
-        inactivate_productToTrack(conn, productToTrackId)
+    newStats = newStats + dailyParsesAllSellers
+
+    # if len(snapshots) != 0 and all(x[3] == 'NO SELLER' for x in snapshots):
+    #     inactivate_productToTrack(conn, productToTrackId)
+
+    return newStats

@@ -36,6 +36,16 @@ def create_dailyParse(conn, dailyParse: DailyParse):
     return cur.lastrowid
 
 
+def create_dailyParseList(conn, dailyParses):
+    sql = ''' INSERT INTO dailyParse(avgPrice,dayStart,dayEnd,productToTrackId,ean,revenue,sellerId,sellerName,stockIncreaseSize,unitsSold,currentStock,parsedOn,type)
+              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) '''
+    cur = conn.cursor()
+    cur.executemany(
+        sql, list(map(lambda x: x.toTuple(), dailyParses)))
+    conn.commit()
+    return
+
+
 def delete_dailyParse_byProductToTrackId(conn, productToTrackId):
     sql = ''' DELETE FROM dailyParse
       WHERE productToTrackId=? '''
@@ -50,6 +60,27 @@ def delete_dailyParse_byProductToTrackId_fromDate(conn, productToTrackId, fromDa
         fromDay + "%' "
     cur = conn.cursor()
     cur.execute(sql, (str(productToTrackId),))
+    conn.commit()
+    return cur.lastrowid
+
+
+def delete_dailyParse_byProductToTrackIds(conn, productToTrackIds):
+
+    cur = conn.cursor()
+    productIds = str(productToTrackIds)[1:][:-1]
+    sql = ''' DELETE FROM dailyParse
+        WHERE productToTrackId in (''' + productIds + ''') '''
+    cur.execute(sql, ())
+    conn.commit()
+    return cur.lastrowid
+
+
+def delete_dailyParse_byProductToTrackIds_fromDate(conn, productToTrackIds, fromDay):
+    sql = " DELETE FROM dailyParse WHERE productToTrackId in (?) AND dayStart > '" + \
+        fromDay + "%' "
+    cur = conn.cursor()
+    productIds = str(productToTrackIds)[1:][:-1]
+    cur.execute(sql, (productIds,))
     conn.commit()
     return cur.lastrowid
 

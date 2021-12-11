@@ -61,4 +61,6 @@ DONE - seller page look at other pages when more the 10 sellers
 
 - inform when product is inactivated through api + give reason
 
+- add product name in bolapi stats
+
 !!!! find succesful sellers with big numbers, contact them
