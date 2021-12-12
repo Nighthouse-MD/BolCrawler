@@ -63,4 +63,6 @@ DONE - seller page look at other pages when more the 10 sellers
 
 - add product name in bolapi stats
 
+DONE - separate grinder process
+
 !!!! find succesful sellers with big numbers, contact them
