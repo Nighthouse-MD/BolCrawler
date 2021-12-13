@@ -174,6 +174,18 @@ def migrateTrackerDB():
                                         ADD COLUMN reasonForInactivating text
                                     """
 
+    sql_alter_productSnapshot_table_add_productName = """ ALTER TABLE productSnapshot
+                                        ADD COLUMN productName text
+                                    """
+
+    sql_alter_dailyParse_table_add_currentProductName = """ ALTER TABLE dailyParse
+                                        ADD COLUMN currentProductName text
+                                    """
+
+    sql_alter_dailyParse_table_add_currentPrice = """ ALTER TABLE dailyParse
+                                        ADD COLUMN currentPrice DOUBLE
+                                    """
+
     # sql_create_productToTrack_apiUser_table = """ CREATE TABLE IF NOT EXISTS productToTrack_apiUser (
     #                                     productToTrackId integer PRIMARY KEY,
     #                                     apiUserId integer PRIMARY KEY,
@@ -203,6 +215,11 @@ def migrateTrackerDB():
             alter_table(conn, sql_alter_dailyParse_table_add_type)
             alter_table(
                 conn, sql_alter_productToTrack_table_add_reasonForInactivating)
+            alter_table(conn, sql_alter_productSnapshot_table_add_productName)
+            alter_table(
+                conn, sql_alter_dailyParse_table_add_currentProductName)
+            alter_table(
+                conn, sql_alter_dailyParse_table_add_currentPrice)
             # create_table(conn, sql_create_productToTrack_apiUser_table)
         except Error as e:
             print(e)

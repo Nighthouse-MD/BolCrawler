@@ -157,7 +157,7 @@ def handlerCrawlForOneProductAllSellers(driver, product):
             inactivate_productToTrack(conn, product[0], "No sellers found")
             return
 
-        time.sleep(2.2)  # avoid ip blocking
+        time.sleep(2.8)  # avoid ip blocking
         goToCart(driver)
 
         shoppingCartElements = getShoppingCartElements(driver)
@@ -181,7 +181,8 @@ def handlerCrawlForOneProductAllSellers(driver, product):
 def getNextSellerPageButton(driver):
     nextPageButton = None
     try:
-        nextPageButton = driver.find_element_by_xpath("//a[@aria-label='volgende']")
+        nextPageButton = driver.find_element_by_xpath(
+            "//a[@aria-label='volgende']")
     except Exception as e:
         nextPageButton = None
 
@@ -207,7 +208,7 @@ def handleException(driver, product, sellerId='NO SELLER', sellerName='NO SELLER
 
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     create_productSnapshot(
-        conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0))
+        conn, (product[0], datetime.now(), sellerId, sellerName, - 1, 0, "error"))
     create_log(conn, ScraperLog(
         f'An error occured when tracking product with db id {product[0]}', 'Error', ex_type.__name__, ex_value, stack_trace))
     try:
@@ -262,6 +263,9 @@ def scrapeOneShoppingCartItem(driver, elementToScrape, product, index, shoppingC
     except:
         handleException(driver, product, 'PRICE ERROR', 'PRICE ERROR')
 
+    productName = findElementByClassNameUntilFound(
+        elementToScrape, 'product-details__title').text
+
     # check for non bol seller element location
     try:
         sellerNameElement = findElementByClassNameUntilFound(
@@ -305,7 +309,7 @@ def scrapeOneShoppingCartItem(driver, elementToScrape, product, index, shoppingC
 
     trackedOn = datetime.now()
 
-    return (shoppingCartElements, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount))
+    return (shoppingCartElements, (product[0], trackedOn, sellerId, sellerName, priceOfOne, stockAmount, productName))
 
 
 def clearShoppingCart(driver):

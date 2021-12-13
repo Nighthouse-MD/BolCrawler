@@ -24,9 +24,19 @@ def list_all_by_productId_from_date(conn, productId, fromDay):
     return rows
 
 
+# def create_productSnapshots(conn, productSnapshots):
+#     for i in range(len(productSnapshots)):
+#         create_productSnapshot(conn, productSnapshots[i])
+
+
 def create_productSnapshots(conn, productSnapshots):
-    for i in range(len(productSnapshots)):
-        create_productSnapshot(conn, productSnapshots[i])
+    sql = ''' INSERT INTO productSnapshot(productToTrackId,trackedOn,sellerId,sellerName,price,stockAmount,productName)
+              VALUES(?,?,?,?,?,?,?) '''
+    cur = conn.cursor()
+    cur.executemany(
+        sql, productSnapshots)
+    conn.commit()
+    return
 
 
 def create_productSnapshot(conn, productSnapshot):
@@ -36,8 +46,8 @@ def create_productSnapshot(conn, productSnapshot):
     :param productSnapshot:
     :return: productSnapshot id
     """
-    sql = ''' INSERT INTO productSnapshot(productToTrackId,trackedOn,sellerId,sellerName,price,stockAmount)
-              VALUES(?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO productSnapshot(productToTrackId,trackedOn,sellerId,sellerName,price,stockAmount,productName)
+              VALUES(?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, productSnapshot)
     conn.commit()

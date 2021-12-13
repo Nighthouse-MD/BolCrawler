@@ -53,7 +53,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
                 continue
 
             dailyParse = DailyParse(
-                productToTrackId, sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6], ean, 'D')
+                productToTrackId, sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6], ean, 'D', sellerSnapshotsOnOneDay[0][7])
             dailyParse.dayStart = parse(sellerSnapshotsOnOneDay[0][2]).date()
             dailyParse.dayEnd = dailyParse.dayStart + timedelta(days=1)
 
@@ -80,6 +80,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
                 dailyParse.avgPrice = dailyParse.revenue / dailyParse.unitsSold
 
             dailyParse.currentStock = sellerSnapshotsOnOneDay[totalAmountOfSnapshots - 1][5]
+            dailyParse.currentPrice = sellerSnapshotsOnOneDay[totalAmountOfSnapshots - 1][4]
             dailyParses.append(dailyParse)
 
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
@@ -92,7 +93,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
     for day, dailyGrp in itertools.groupby(dailyParses, key=lambda x: x.dayStart):
         listOfOneDay = list(dailyGrp)
         dailyParseAllSellers = DailyParse(
-            productToTrackId, 'ALL', 'ALL', ean, 'D')
+            productToTrackId, 'ALL', 'ALL', ean, 'D', listOfOneDay[0].currentProductName)
         dailyParseAllSellers.dayStart = listOfOneDay[0].dayStart
         dailyParseAllSellers.dayEnd = listOfOneDay[0].dayEnd
 
