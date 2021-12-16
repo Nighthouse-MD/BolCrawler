@@ -2,7 +2,7 @@
 # from Data import db
 
 from Crawler.BolCrawlerV2 import handlerCrawlForOneProductAllSellers, getDriverBE
-from Data.trackerDB.productToTrack import list_all, list_all_untracked_productIds_today
+from Data.trackerDB.productToTrack import list_all_active, list_all_untracked_productIds_today
 from Data.db import create_connection
 from Constants import Constants
 import random
@@ -32,7 +32,7 @@ def run():
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
     create_log(conn, ScraperLog(
         f'TRACKER START', 'Info', None, None, None))
-    productsToTrack = list_all(conn)
+    productsToTrack = list_all_active(conn)
     productIdsToTrackfirst = list_all_untracked_productIds_today(conn)
 
     productsToTrackFirst = []

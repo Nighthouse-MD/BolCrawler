@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 from Constants import Constants
 from datetime import datetime
-from Data.trackerDB.productToTrack import list_all, updateEan_productToTrack
+from Data.trackerDB.productToTrack import list_all_active, updateEan_productToTrack
 import requests
 
 
@@ -62,7 +62,7 @@ def isEanMissing(product):
 
 def checkForMissingEans():
     conn = create_connection(Constants.BOLDER_TRACKER_DB_PATH)
-    trackedProducts = list_all(conn)
+    trackedProducts = list_all_active(conn)
     productsWithMissingEan = list(filter(isEanMissing, trackedProducts))
 
     for i in range(len(productsWithMissingEan)):

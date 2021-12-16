@@ -252,6 +252,7 @@ def putAllInWinkelWagen(driver):
                 count = count + 1
                 time.sleep(0.1)
         time.sleep(0.3)
+        time.sleep(0.3)  # avoind ip blocking
 
     return True
 

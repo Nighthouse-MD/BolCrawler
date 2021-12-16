@@ -35,7 +35,7 @@ DONE - improve crawler: put all seller products for one ean in basket, go to bas
 
 - round revenue to 2 decimals in api
 
-- add currentprice to dailyParse, even if no sales
+DONE - add currentprice to dailyParse, even if no sales
 
 - detect when there is a big price jump for one seller, then look at all other sellers, if they are out of stock there is a clear competitive market for a highly looked after product
 
@@ -59,10 +59,12 @@ PARTIALLY DONE - group db snapshot write calls per product
 
 DONE - seller page look at other pages when more the 10 sellers
 
-- inform when product is inactivated through api + give reason
+DONE - inform when product is inactivated through api + give reason
 
-- add product name in bolapi stats
+DONE - add product name in bolapi stats
 
 DONE - separate grinder process
+
+DONE - currentProductName on stats
 
 !!!! find succesful sellers with big numbers, contact them
