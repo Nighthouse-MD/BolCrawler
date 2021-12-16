@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from Data.trackerDB.dailyParse import DailyParse, create_dailyParse, delete_dailyParse_byProductToTrackId, delete_dailyParse_byProductToTrackId_fromDate
 from Data.trackerDB.productSnapshot import list_all_by_productId, list_all_by_productId_from_date
 from Data.trackerDB.productToTrack import inactivate_productToTrack
@@ -21,7 +21,7 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
     if(parseAllDays):
         snapshots = list_all_by_productId(conn, productToTrackId)
     else:
-        fromDate = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+        fromDate = (date.today() - timedelta(days=3)).strftime('%Y-%m-%d')
         snapshots = list_all_by_productId_from_date(
             conn, productToTrackId, fromDate)
 
@@ -46,6 +46,15 @@ def parseSnapshotsForDaily(productToTrackId, ean, parseAllDays):
         for sellerSnapshotsOnOneDay in sellerListsOfOneDay:
             if(sellerSnapshotsOnOneDay[0][3] == 'NO SELLER'):
                 continue
+
+            filteredSnapshots = list(filter(lambda s: (
+                s[2] < sellerSnapshotsOnOneDay[0][2] and s[3] == sellerSnapshotsOnOneDay[0][3]), snapshots))
+
+            if(len(filteredSnapshots) > 0):
+                sortedSnapshots = sorted(
+                    list(filteredSnapshots), key=itemgetter(2), reverse=True)
+                lastSnapShotBeforeThisDay = sortedSnapshots[0]
+                sellerSnapshotsOnOneDay.insert(0, lastSnapShotBeforeThisDay)
 
             dailyParse = DailyParse(
                 productToTrackId, sellerSnapshotsOnOneDay[0][3], sellerSnapshotsOnOneDay[0][6], ean, 'D', sellerSnapshotsOnOneDay[0][7])
