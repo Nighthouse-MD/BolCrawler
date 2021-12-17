@@ -12,10 +12,10 @@ class Request:
         return (self.apiUserId, self.url, self.body, self.requestedOn)
 
 
-def getAllFromLast2Weeks(conn):
+def getAllFromLast4Weeks(conn):
     cur = conn.cursor()
     cur.execute("SELECT * FROM request WHERE requestedOn > " +
-                (date.today() - timedelta(days=14)).strftime('%Y-%m-%d'))
+                (date.today() - timedelta(days=28)).strftime('%Y-%m-%d'))
     rows = cur.fetchall()
     return rows
 

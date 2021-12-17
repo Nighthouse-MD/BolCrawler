@@ -2,14 +2,14 @@ import stockCrawler
 import snapshotGrinder
 from Data.db import create_db
 from Constants import Constants
-from Data.apiDB.request import getAllFromLast2Weeks
+from Data.apiDB.request import getAllFromLast4Weeks
 from Data.db import create_connection
 from Data.trackerDB.productToTrack import inactivate_productToTrack_byEan, list_all_active
 import json
 
 if __name__ == '__main__':
     apiDbConn = create_connection(Constants.BOLDER_API_DB_PATH)
-    logs = getAllFromLast2Weeks(apiDbConn)
+    logs = getAllFromLast4Weeks(apiDbConn)
 
     statLogs = list(filter(lambda x: x[2].find(
         'productStatistics') > -1, logs))
