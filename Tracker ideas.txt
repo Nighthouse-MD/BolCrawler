@@ -67,4 +67,6 @@ DONE - separate grinder process
 
 DONE - currentProductName on stats
 
+DONE - calculate stats for each day including last snapshot of previous day
+
 !!!! find succesful sellers with big numbers, contact them

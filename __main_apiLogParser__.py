@@ -36,6 +36,7 @@ if __name__ == '__main__':
         filter(lambda x: x not in requestedEans, allActiveEans))
 
     for ean in eansToDeactivate:
-        inactivate_productToTrack_byEan(trackerDbConn, ean, "")
+        inactivate_productToTrack_byEan(
+            trackerDbConn, ean, "inactivated after 2 weeks of inactivity")
 
     print('done')
