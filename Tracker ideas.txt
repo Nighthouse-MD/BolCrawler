@@ -69,4 +69,6 @@ DONE - currentProductName on stats
 
 DONE - calculate stats for each day including last snapshot of previous day
 
+DONE - reactivate productToTrack through API
+
 !!!! find succesful sellers with big numbers, contact them
